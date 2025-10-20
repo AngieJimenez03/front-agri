@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .bg-verde-difuminado {
+    background-image: linear-gradient(135deg, #d1fae5, #86efac, #4ade80);
+  }
+}
+
+body {
+  @apply flex justify-center items-center min-h-screen bg-verde-difuminado font-sans;
+}
