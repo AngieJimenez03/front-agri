@@ -1,32 +1,20 @@
-// src/components/SummaryCards.jsx
-import CardMetric from "./CardMetric";
-
-export default function SummaryCards({ rol, data = {} }) {
-  const cards =
-    rol === "admin"
-      ? [
-          { title: "Lotes activos", value: data.lotes || "—" },
-          { title: "Tareas en curso", value: data.tareas || "—" },
-          { title: "Incidencias", value: data.incidencias || "—" },
-          { title: "Usuarios", value: data.usuarios || "—" },
-        ]
-      : rol === "supervisor"
-      ? [
-          { title: "Mis Lotes", value: data.lotes || "—" },
-          { title: "Tareas activas", value: data.tareas || "—" },
-          { title: "Incidencias en mis lotes", value: data.incidencias || "—" },
-        ]
-      : [
-          { title: "Mis Tareas", value: data.misTareas || "—" },
-          { title: "Pendientes", value: data.pendientes || "—" },
-          { title: "Completadas", value: data.completadas || "—" },
-        ];
+export default function SummaryCards() {
+  const data = [
+    { titulo: "Lotes Activos", valor: 24, variacion: "+3", color: "green" },
+    { titulo: "Tareas Pendientes", valor: 18, variacion: "-5", color: "yellow" },
+    { titulo: "Técnicos en Campo", valor: 12, variacion: "+2", color: "blue" },
+    { titulo: "Incidencias Críticas", valor: 3, variacion: "-1", color: "red" },
+  ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-      {cards.map((c, i) => (
-        <CardMetric key={i} title={c.title} value={c.value} />
+    <section className="summary-cards">
+      {data.map((item, i) => (
+        <div key={i} className={`card ${item.color}`}>
+          <h4>{item.titulo}</h4>
+          <h2>{item.valor}</h2>
+          <span>{item.variacion}</span>
+        </div>
       ))}
-    </div>
+    </section>
   );
 }

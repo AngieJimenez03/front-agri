@@ -1,0 +1,262 @@
+/* === CONTENEDOR PRINCIPAL === */
+.dashboard-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: #f9fafb;
+  overflow: hidden;
+  font-family: "Inter", sans-serif;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  width: 250px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+
+.logo-section {
+  background-color: #f8faf8;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.8rem 1.5rem;
+  margin-bottom: 0.8rem; 
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.logo-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #004d26;
+  margin: 0;
+  padding: 0;
+}
+
+.logo-subtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0;
+  padding: 0;
+}
+
+
+.sidebar ul {
+  list-style: none;
+  margin-top: 0;
+  padding: 0;
+}
+
+.sidebar li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 1.5rem;
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.25s ease;
+  font-size: 0.95rem;
+}
+
+.sidebar li:hover {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.sidebar li.active {
+  background: #d1fae5;
+  color: #047857;
+  font-weight: 600;
+  border-right: 4px solid #047857;
+}
+
+
+.user-section {
+  margin-top: auto;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #10b981;
+  color: white;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+
+.user-menu {
+  position: absolute;
+  bottom: 70px;
+  left: 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.user-menu button {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.2s;
+}
+
+.user-menu button:hover {
+  background: #f3f4f6;
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8faf8; 
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  height: 95px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  font-family: "Poppins", sans-serif;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.logo-text-topbar {
+  display: flex;
+  align-items: baseline;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.app-name {
+  color: #004d26;
+}
+
+.app-name-bold {
+  color: #198754;
+  font-weight: 700;
+}
+
+
+.divider {
+  width: 1px;
+  height: 50px;
+  background-color: #d1d5db;
+}
+
+.topbar-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.topbar-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #198754;
+  margin: 0;
+}
+
+.topbar-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.btn-asignar-tarea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #198754;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-asignar-tarea:hover {
+  background-color: #157347;
+}
+
+.icono-mas {
+  font-size: 18px;
+}
+
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .topbar {
+    padding: 1rem;
+    height: auto;
+  }
+
+  .topbar-title {
+    font-size: 1.6rem;
+  }
+}

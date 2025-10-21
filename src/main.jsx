@@ -6,6 +6,7 @@ import App from "./App.jsx";
 import "./styles/index.css";
 import { SocketProvider } from "./context/SocketContext";
 import { LoteProvider } from "./context/LoteContext";
+import "@fontsource/poppins";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -1,97 +1,65 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import {
-  LayoutDashboard,
-  ClipboardList,
-  Users,
-  BarChart2,
-  Settings,
-  HelpCircle,
-  LogOut,
-  Leaf,
-  Sprout, 
-  MessageSquareText, 
-} from "lucide-react";
+  FaTachometerAlt,
+  FaTasks,
+  FaUsers,
+  FaComments,
+  FaCog,
+  FaLeaf,
+  FaMapMarkedAlt,
+} from "react-icons/fa";
+import classNames from "classnames";
+import "../styles/dashboard.css";
 
-export default function Sidebar({ rol }) {
-  const navigate = useNavigate();
+export default function Sidebar() {
+  const [active, setActive] = useState("Dashboard");
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
+  const menuItems = [
+    { name: "Dashboard", icon: <FaTachometerAlt /> },
+    { name: "Lotes", icon: <FaMapMarkedAlt /> },
+    { name: "Tareas", icon: <FaTasks /> },
+    { name: "Chat", icon: <FaComments /> },
+    { name: "Usuarios", icon: <FaUsers /> },
+    { name: "Configuración", icon: <FaCog /> },
+  ];
 
   return (
-    <aside className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col justify-between fixed left-0 top-0">
-      
-      <div>
-        <div className="flex items-center gap-2 px-6 py-6 border-b border-gray-100">
-          <Leaf className="text-green-600 w-6 h-6" />
-          <h1 className="text-2xl font-bold text-green-700">Raízen</h1>
+    <aside className="sidebar">
+      {/* === LOGO Y NOMBRE DE LA APP === */}
+      <div className="logo-section">
+        <div className="logo-container">
+          <FaLeaf size={22} color="#047857" />
+          <div className="logo-text">
+            <span className="logo-title">Raízen</span>
+            <p className="logo-subtitle">Sistema de Gestión</p>
+          </div>
         </div>
-
-        
-        <nav className="flex flex-col mt-6 px-3 space-y-2">
-          <NavItem to="/dashboard" icon={<LayoutDashboard />} label="Dashboard" />
-          <NavItem to="/dashboard/tareas" icon={<ClipboardList />} label="Tareas" />
-
-          {(rol === "admin" || rol === "supervisor") && (
-            <>
-              <NavItem to="/dashboard/tecnicos" icon={<Users />} label="Técnicos" />
-              <NavItem to="/dashboard/lotes" icon={<Sprout />} label="Lotes" /> 
-            </>
-          )}
-          
-
-          <NavItem to="/dashboard/chat" icon={<MessageSquareText />} label="Chat" /> 
-
-          {rol === "admin" && (
-            <NavItem to="/dashboard/reportes" icon={<BarChart2 />} label="Reportes" />
-          )}
-        </nav>
       </div>
 
-      
-      <div className="px-3 py-6 border-t border-gray-100 space-y-2">
-        <NavLink
-          className="flex items-center gap-3 w-full text-gray-700 hover:text-green-600 p-2 rounded-lg"
-          to="/help"
-        >
-          <HelpCircle size={18} /> <span>Ayuda y soporte</span>
-        </NavLink>
+      {/* === MENÚ PRINCIPAL === */}
+      <ul>
+        {menuItems.map((item) => (
+          <li
+            key={item.name}
+            onClick={() => setActive(item.name)}
+            className={classNames({ active: active === item.name })}
+          >
+            {item.icon} {item.name}
+          </li>
+        ))}
+      </ul>
 
-        <NavLink
-          className="flex items-center gap-3 w-full text-gray-700 hover:text-green-600 p-2 rounded-lg"
-          to="/settings"
-        >
-          <Settings size={18} /> <span>Configuración</span>
-        </NavLink>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full text-red-600 hover:text-red-700 font-medium p-2 rounded-lg transition"
-        >
-          <LogOut size={18} />
-          <span>Cerrar sesión</span>
-        </button>
+      {/* === SECCIÓN DE USUARIO (INFERIOR) === */}
+      <div className="user-section">
+        <div className="user-info">
+          <div className="user-avatar">JP</div>
+          <div>
+            <div className="user-name">Juan Pérez</div>
+            <div className="user-role">Administrador</div>
+          </div>
+        </div>
       </div>
     </aside>
   );
 }
 
-function NavItem({ to, icon, label }) {
-  return (
-    <NavLink
-      to={to}
-      className={({ isActive }) =>
-        `flex items-center gap-3 w-full p-2 rounded-lg transition ${
-          isActive
-            ? "bg-green-50 text-green-700 font-semibold"
-            : "text-gray-700 hover:bg-gray-100 hover:text-green-600"
-        }`
-      }
-    >
-      {icon}
-      <span>{label}</span>
-    </NavLink>
-  );
-}
