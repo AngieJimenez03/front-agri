@@ -13,19 +13,33 @@ export default function Login() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const data = await loginUser(form.email, form.clave);
-      toast.success("Bienvenido", { duration: 1200, position: "top-center" });
-      setTimeout(() => navigate("/dashboard"), 1200);
-    } catch (err) {
-      toast.error(err.message || "Contraseña incorrecta", { duration: 2500, position: "top-center" });
-    } finally {
-      setLoading(false);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const data = await loginUser(form.email, form.clave);
+
+    //  Guardar token y usuario en localStorage
+    if (data?.token) {
+      localStorage.setItem("token", data.token);
     }
-  };
+
+    if (data?.usuario) {
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+    }
+
+    toast.success(`Bienvenido `, { duration: 1200, position: "top-center" });
+
+    setTimeout(() => navigate("/dashboard"), 1200);
+  } catch (err) {
+    toast.error(err.message || "Contraseña incorrecta", {
+      duration: 2500,
+      position: "top-center",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <AuthLayout>
