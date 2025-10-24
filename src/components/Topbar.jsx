@@ -1,7 +1,18 @@
 import { FiPlus } from "react-icons/fi";
 import "../styles/dashboard.css";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Topbar() {
+  const { rol } = useAuth();
+
+  const botonesPorRol = {
+    admin: { texto: "Asignar tarea", visible: true },
+    supervisor: { texto: "Registrar lote", visible: true },
+    tecnico: { texto: "Ver mis tareas", visible: false }, // el técnico no puede crear
+  };
+
+  const { texto, visible } = botonesPorRol[rol] || {};
+
   return (
     <header className="topbar">
       <div className="topbar-left">
@@ -11,10 +22,13 @@ export default function Topbar() {
         </p>
       </div>
 
-      <button className="btn-asignar-tarea">
-        <FiPlus className="icono-mas" />
-        Asignar Tarea
-      </button>
+      {visible && (
+        <button className="btn-asignar-tarea">
+          <FiPlus className="icono-mas" />
+          {texto}
+        </button>
+      )}
     </header>
   );
 }
+
