@@ -5,8 +5,9 @@
   width: 100vw;
   background: #f9fafb;
   overflow: hidden;
-  font-family: "Inter", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
+
 
 /* === SIDEBAR === */
 .sidebar {
@@ -167,9 +168,8 @@
   border-bottom: 1px solid #e2e8f0;
   height: 95px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  font-family: "Poppins", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
-
 .app-header {
   display: flex;
   align-items: center;

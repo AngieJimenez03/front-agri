@@ -5,20 +5,27 @@ import RecentIncidents from "../../components/RecentIncidents";
 import ActiveProcesses from "../../components/ActiveProcesses";
 import RealTimeActivities from "../../components/RealTimeActivities";
 import "../../styles/dashboard.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ClipboardList,
   Plus,
   FileText,
   MessageCircle,
-  CalendarDays,
   AlertTriangle,
   RefreshCw,
-  Wrench,
 } from "lucide-react";
 
 export default function Overview() {
-  const [rol, setRol] = useState("admin");
+  // 🔹 1. Leer rol del usuario desde localStorage
+  const [rol, setRol] = useState(localStorage.getItem("rol") || "tecnico");
+
+  // 🔹 2. Si cambia en localStorage, actualizar estado
+  useEffect(() => {
+    const storedRol = localStorage.getItem("rol");
+    if (storedRol && storedRol !== rol) {
+      setRol(storedRol);
+    }
+  }, []);
 
   // === Tareas activas por rol ===
   const procesosPorRol = {
@@ -104,18 +111,7 @@ export default function Overview() {
 
   return (
     <div className="overview-container">
-      {/* === Selector de Rol (solo para pruebas, puedes quitarlo después) === */}
-      <div className="mb-4 flex justify-end">
-        <select
-          value={rol}
-          onChange={(e) => setRol(e.target.value)}
-          className="border rounded-lg p-2 text-sm bg-white shadow-sm"
-        >
-          <option value="admin">Administrador</option>
-          <option value="supervisor">Supervisor</option>
-          <option value="tecnico">Técnico</option>
-        </select>
-      </div>
+      {/* 🔹 Se eliminó el selector manual de rol */}
 
       {/* === Tarjetas principales === */}
       <DashboardCards rol={rol} />
@@ -218,3 +214,4 @@ export default function Overview() {
     </div>
   );
 }
+

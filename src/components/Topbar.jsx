@@ -1,3 +1,4 @@
+// src/components/Topbar.jsx
 import { FiPlus } from "react-icons/fi";
 import "../styles/dashboard.css";
 import { useAuth } from "../hooks/useAuth";
@@ -5,10 +6,11 @@ import { useAuth } from "../hooks/useAuth";
 export default function Topbar() {
   const { rol } = useAuth();
 
+  // ✅ Solo el admin ve el botón y dice "Crear usuario"
   const botonesPorRol = {
-    admin: { texto: "Asignar tarea", visible: true },
-    supervisor: { texto: "Registrar lote", visible: true },
-    tecnico: { texto: "Ver mis tareas", visible: false }, // el técnico no puede crear
+    admin: { texto: "Crear usuario", visible: true },
+    supervisor: { texto: "", visible: false },
+    tecnico: { texto: "", visible: false },
   };
 
   const { texto, visible } = botonesPorRol[rol] || {};
@@ -31,4 +33,5 @@ export default function Topbar() {
     </header>
   );
 }
+
 

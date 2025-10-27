@@ -19,20 +19,26 @@ const handleSubmit = async (e) => {
   try {
     const data = await loginUser(form.email, form.clave);
 
-    //  Guardar token y usuario en localStorage
+    // Guardar token
     if (data?.token) {
       localStorage.setItem("token", data.token);
     }
 
+    // Guardar usuario
     if (data?.usuario) {
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
+
+      // ✅ Guardar también el rol para usar en el dashboard
+      if (data.usuario.rol) {
+        localStorage.setItem("rol", data.usuario.rol.toLowerCase());
+      }
     }
 
-    toast.success(`Bienvenido `, { duration: 1200, position: "top-center" });
+    toast.success(`Bienvenido`, { duration: 1200, position: "top-center" });
 
     setTimeout(() => navigate("/dashboard"), 1200);
   } catch (err) {
-    toast.error(err.message || "Contraseña incorrecta", {
+    toast.error(err.message || "Credenciales incorrectas", {
       duration: 2500,
       position: "top-center",
     });
@@ -40,6 +46,7 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
+
 
   return (
     <AuthLayout>

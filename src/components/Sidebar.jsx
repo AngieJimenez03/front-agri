@@ -1,3 +1,4 @@
+// src/components/Sidebar.jsx
 import { useState, useEffect, useRef } from "react";
 import {
   FaTachometerAlt,
@@ -9,6 +10,7 @@ import {
   FaMapMarkedAlt,
   FaSignOutAlt,
   FaChevronDown,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
@@ -21,30 +23,23 @@ export default function Sidebar() {
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
-  // 🟢 Cargar datos del usuario desde localStorage
+  // 🧠 Cargar datos del usuario guardados en localStorage
   useEffect(() => {
     const data = localStorage.getItem("usuario");
-    if (data) {
-      try {
-        setUsuario(JSON.parse(data));
-      } catch (error) {
-        console.error("Error al leer usuario del localStorage:", error);
-      }
-    }
+    if (data) setUsuario(JSON.parse(data));
   }, []);
 
-  // 🟢 Cerrar menú si se hace clic fuera
+  // Cerrar menú si se hace clic afuera
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target))
         setMenuAbierto(false);
-      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 🟢 Iniciales del avatar
+  // Iniciales para el avatar
   const iniciales = usuario.nombre
     ? usuario.nombre
         .split(" ")
@@ -54,31 +49,50 @@ export default function Sidebar() {
         .slice(0, 2)
     : "US";
 
-  // 🟢 Cerrar sesión
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
     navigate("/login");
   };
 
-  const menuItems = [
-    { name: "Dashboard", icon: <FaTachometerAlt /> },
-    { name: "Lotes", icon: <FaMapMarkedAlt /> },
-    { name: "Tareas", icon: <FaTasks /> },
-    { name: "Chat", icon: <FaComments /> },
-    { name: "Usuarios", icon: <FaUsers /> },
-    { name: "Configuración", icon: <FaCog /> },
-  ];
+  // === 🧭 Menú dinámico según el rol del usuario ===
+  const menuPorRol = {
+    admin: [
+      { name: "Dashboard", icon: <FaTachometerAlt /> },
+      { name: "Lotes", icon: <FaMapMarkedAlt /> },
+      { name: "Tareas", icon: <FaTasks /> },
+      { name: "Incidencias", icon: <FaExclamationTriangle /> },
+      { name: "Chat", icon: <FaComments /> },
+      { name: "Usuarios", icon: <FaUsers /> },
+      { name: "Configuración", icon: <FaCog /> },
+    ],
+    supervisor: [
+      { name: "Dashboard", icon: <FaTachometerAlt /> },
+      { name: "Lotes", icon: <FaMapMarkedAlt /> },
+      { name: "Tareas", icon: <FaTasks /> },
+      { name: "Incidencias", icon: <FaExclamationTriangle /> },
+      { name: "Chat", icon: <FaComments /> },
+    ],
+    tecnico: [
+  { name: "Dashboard", icon: <FaTachometerAlt /> },
+  { name: "Mis Tareas", icon: <FaTasks /> },
+  { name: "Lotes", icon: <FaMapMarkedAlt /> },
+  { name: "Incidencias", icon: <FaExclamationTriangle /> },
+  { name: "Chat", icon: <FaComments /> },
+],
+  };
+
+  const menuItems = menuPorRol[usuario.rol] || [];
 
   return (
     <aside className="sidebar">
-      {/* === LOGO Y NOMBRE DE LA APP === */}
+      {/* === LOGO === */}
       <div className="logo-section">
         <div className="logo-container">
           <FaLeaf size={22} color="#047857" />
           <div className="logo-text">
             <span className="logo-title">Raízen</span>
-            <p className="logo-subtitle">Sistema de Gestión</p>
+            <p className="logo-subtitle">Gestión Agrícola</p>
           </div>
         </div>
       </div>
@@ -96,7 +110,7 @@ export default function Sidebar() {
         ))}
       </ul>
 
-      {/* === SECCIÓN DE USUARIO (INFERIOR) === */}
+      {/* === USUARIO === */}
       <div className="user-section" ref={menuRef}>
         <div
           className="user-info"
@@ -112,10 +126,12 @@ export default function Sidebar() {
                 : "Rol"}
             </div>
           </div>
-          <FaChevronDown size={14} style={{ marginLeft: "auto", color: "#4b5563" }} />
+          <FaChevronDown
+            size={14}
+            style={{ marginLeft: "auto", color: "#4b5563" }}
+          />
         </div>
 
-        {/* === MENÚ DESPLEGABLE SOLO CON “CERRAR SESIÓN” === */}
         {menuAbierto && (
           <div className="user-menu">
             <button
