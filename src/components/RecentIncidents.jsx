@@ -1,34 +1,27 @@
 import { AlertCircle } from "lucide-react";
 
-export default function RecentIncidents() {
-  const incidencias = [
-    {
-      fecha: "2025-10-22",
-      lote: "Lote 05-A",
-      estado: "Abierta",
-      responsable: "Carlos Ruiz",
-    },
-    {
-      fecha: "2025-10-21",
-      lote: "Lote 07-C",
-      estado: "En proceso",
-      responsable: "Ana Gómez",
-    },
-    {
-      fecha: "2025-10-20",
-      lote: "Lote 02-B",
-      estado: "Resuelta",
-      responsable: "Laura Méndez",
-    },
-  ];
+function formatearFecha(fechaISO) {
+  if (!fechaISO) return "—";
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString("es-CO", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
+export default function RecentIncidents({ incidencias = [] }) {
   const getBadgeColor = (estado) => {
-    switch (estado) {
-      case "Abierta":
+    switch (estado?.toLowerCase()) {
+      case "pendiente":
+      case "abierta":
         return "bg-red-100 text-red-700";
-      case "En proceso":
+      case "en_revision":
+      case "en proceso":
         return "bg-yellow-100 text-yellow-700";
-      case "Resuelta":
+      case "resuelta":
         return "bg-green-100 text-green-700";
       default:
         return "bg-gray-100 text-gray-700";
@@ -52,25 +45,39 @@ export default function RecentIncidents() {
           </tr>
         </thead>
         <tbody>
-          {incidencias.map((inc, i) => (
-            <tr
-              key={i}
-              className="border-b last:border-0 hover:bg-gray-50 transition"
-            >
-              <td className="py-2">{inc.fecha}</td>
-              <td className="py-2 font-medium text-gray-800">{inc.lote}</td>
-              <td className="py-2">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-semibold ${getBadgeColor(
-                    inc.estado
-                  )}`}
-                >
-                  {inc.estado}
-                </span>
+          {incidencias.length > 0 ? (
+            incidencias.map((inc, i) => (
+              <tr
+                key={i}
+                className="border-b last:border-0 hover:bg-gray-50 transition"
+              >
+                <td className="py-2 text-gray-600">
+                  {formatearFecha(inc.fecha)} {/* ✅ muestra fecha real */}
+                </td>
+                <td className="py-2 font-medium text-gray-800">
+                  {inc.lote?.nombre || inc.lote || "Sin asignar"}
+                </td>
+                <td className="py-2">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${getBadgeColor(
+                      inc.estado
+                    )}`}
+                  >
+                    {inc.estado || "Sin estado"}
+                  </span>
+                </td>
+                <td className="py-2">
+                  {inc.responsable || inc.tecnico?.nombre || "No asignado"}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="text-center text-gray-500 py-4">
+                Sin incidencias recientes
               </td>
-              <td className="py-2">{inc.responsable}</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

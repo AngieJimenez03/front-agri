@@ -1,4 +1,3 @@
-// src/pages/dashboard/Overview.jsx
 import DashboardCards from "../../components/DashboardCards";
 import SystemStatus from "../../components/SystemStatus";
 import RecentIncidents from "../../components/RecentIncidents";
@@ -6,6 +5,7 @@ import ActiveProcesses from "../../components/ActiveProcesses";
 import RealTimeActivities from "../../components/RealTimeActivities";
 import "../../styles/dashboard.css";
 import { useState, useEffect } from "react";
+import { obtenerResumen } from "../../services/dashboardService";
 import {
   ClipboardList,
   Plus,
@@ -16,80 +16,27 @@ import {
 } from "lucide-react";
 
 export default function Overview() {
-  // 🔹 1. Leer rol del usuario desde localStorage
   const [rol, setRol] = useState(localStorage.getItem("rol") || "tecnico");
+  const [resumen, setResumen] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
-  // 🔹 2. Si cambia en localStorage, actualizar estado
   useEffect(() => {
-    const storedRol = localStorage.getItem("rol");
-    if (storedRol && storedRol !== rol) {
-      setRol(storedRol);
-    }
+    const cargarDatos = async () => {
+      try {
+        const data = await obtenerResumen();
+        if (data) setResumen(data.resumen); // ✅ guarda solo la parte útil
+      } catch (error) {
+        console.error("Error al obtener resumen:", error);
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargarDatos();
   }, []);
 
-  // === Tareas activas por rol ===
-  const procesosPorRol = {
-    supervisor: [
-      {
-        id: 1,
-        name: "Aplicación de Fertilizante",
-        area: "Lote 3B",
-        responsable: "Carlos M.",
-        date: "23/10/2025",
-        progress: 60,
-        status: "En proceso",
-      },
-      {
-        id: 2,
-        name: "Monitoreo de Plaga",
-        area: "Lote 7A",
-        responsable: "Ana L.",
-        date: "22/10/2025",
-        progress: 0,
-        status: "Pendiente",
-      },
-      {
-        id: 3,
-        name: "Riego del Lote 5A",
-        area: "Zona Norte",
-        responsable: "Pedro G.",
-        date: "21/10/2025",
-        progress: 25,
-        status: "En proceso",
-      },
-    ],
-    tecnico: [
-      {
-        id: 1,
-        name: "Aplicación de Fertilizante",
-        area: "Lote 3B",
-        responsable: "Carlos M.",
-        date: "23/10/2025",
-        progress: 60,
-        status: "En proceso",
-      },
-      {
-        id: 2,
-        name: "Monitoreo de Plaga",
-        area: "Lote 7A",
-        responsable: "Carlos M.",
-        date: "22/10/2025",
-        progress: 0,
-        status: "Pendiente",
-      },
-      {
-        id: 3,
-        name: "Riego del Lote",
-        area: "Lote 5A",
-        responsable: "Carlos M.",
-        date: "21/10/2025",
-        progress: 100,
-        status: "Completada",
-      },
-    ],
-  };
+  if (cargando) return <p className="text-center mt-8">Cargando datos...</p>;
+  if (!resumen) return <p className="text-center mt-8">No hay datos disponibles.</p>;
 
-  // === Acciones rápidas por rol con iconos ===
   const accionesPorRol = {
     admin: [
       { nombre: "Registrar lote", color: "#0d6efd", Icon: Plus },
@@ -111,25 +58,21 @@ export default function Overview() {
 
   return (
     <div className="overview-container">
-      {/* 🔹 Se eliminó el selector manual de rol */}
-
       {/* === Tarjetas principales === */}
-      <DashboardCards rol={rol} />
+      <DashboardCards rol={rol} data={resumen.cards} />
 
-      {/* === Panel Admin === */}
+      {/* === Panel ADMIN === */}
       {rol === "admin" && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <SystemStatus />
+            <SystemStatus data={resumen.estadoSistema} />
             <div className="lg:col-span-2">
-              <RecentIncidents />
+              <RecentIncidents incidencias={resumen.ultimasIncidencias} />
             </div>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 mt-6">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Acciones Rápidas
-            </h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">Acciones Rápidas</h2>
             <div className="flex flex-wrap gap-3">
               {accionesPorRol.admin.map(({ nombre, color, Icon }, i) => (
                 <button
@@ -146,18 +89,16 @@ export default function Overview() {
         </>
       )}
 
-      {/* === Panel Supervisor === */}
+      {/* === Panel SUPERVISOR === */}
       {rol === "supervisor" && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
             <div className="lg:col-span-2">
-              <ActiveProcesses processes={procesosPorRol.supervisor} />
+              <ActiveProcesses processes={resumen.procesosActivos} />
             </div>
 
             <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-              <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                Acciones Rápidas
-              </h2>
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">Acciones Rápidas</h2>
               <div className="flex flex-col gap-3">
                 {accionesPorRol.supervisor.map(({ nombre, color, Icon }, i) => (
                   <button
@@ -174,23 +115,21 @@ export default function Overview() {
           </div>
 
           <div className="mt-6">
-            <RealTimeActivities />
+            <RealTimeActivities actividades={resumen.actividadReciente} />
           </div>
         </>
       )}
 
-      {/* === Panel Técnico === */}
+      {/* === Panel TÉCNICO === */}
       {rol === "tecnico" && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
             <div className="lg:col-span-2">
-              <ActiveProcesses processes={procesosPorRol.tecnico} />
+              <ActiveProcesses processes={resumen.procesosActivos} />
             </div>
 
             <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
-              <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                Acciones Rápidas
-              </h2>
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">Acciones Rápidas</h2>
               <div className="flex flex-col gap-3">
                 {accionesPorRol.tecnico.map(({ nombre, color, Icon }, i) => (
                   <button
@@ -207,11 +146,10 @@ export default function Overview() {
           </div>
 
           <div className="mt-6">
-            <RealTimeActivities />
+            <RealTimeActivities actividades={resumen.actividadReciente} />
           </div>
         </>
       )}
     </div>
   );
 }
-

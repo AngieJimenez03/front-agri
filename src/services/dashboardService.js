@@ -1,12 +1,12 @@
-
 import API from "./api";
 
-export async function getDashboardData() {
+// Servicio para obtener el resumen del dashboard
+export const obtenerResumen = async () => {
   try {
-    const res = await API.get("/dashboard"); 
-    return res.data;
-  } catch (err) {
-    console.error("getDashboardData error:", err.response?.data || err.message);
-    throw new Error("Error al obtener datos del dashboard");
+    const { data } = await API.get("/dashboard");
+    return data;
+  } catch (error) {
+    console.error("Error al obtener el resumen del dashboard:", error);
+    return null;
   }
-}
+};

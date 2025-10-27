@@ -9,29 +9,28 @@ import {
 } from "lucide-react";
 
 export default function ActiveProcesses({ processes = [] }) {
-  // Colores y estilos según estado
   const statusConfig = {
-    Pendiente: {
+    pendiente: {
       icon: <PauseCircle className="w-4 h-4 text-gray-500" />,
       color: "bg-gray-100 text-gray-600 border-gray-200",
       bar: "bg-gray-400",
     },
-    "En proceso": {
+    "en_proceso": {
       icon: <Clock className="w-4 h-4 text-blue-500" />,
       color: "bg-blue-100 text-blue-600 border-blue-200",
       bar: "bg-blue-500",
     },
-    Completada: {
+    completada: {
       icon: <CheckCircle2 className="w-4 h-4 text-green-500" />,
       color: "bg-green-100 text-green-600 border-green-200",
       bar: "bg-green-500",
     },
-    Retrasada: {
+    retrasada: {
       icon: <AlertCircle className="w-4 h-4 text-yellow-500" />,
       color: "bg-yellow-100 text-yellow-700 border-yellow-200",
       bar: "bg-yellow-500",
     },
-    Cancelada: {
+    cancelada: {
       icon: <XCircle className="w-4 h-4 text-red-500" />,
       color: "bg-red-100 text-red-600 border-red-200",
       bar: "bg-red-500",
@@ -46,11 +45,15 @@ export default function ActiveProcesses({ processes = [] }) {
       </h2>
 
       {processes.length === 0 ? (
-        <p className="text-gray-400 text-sm">No hay procesos activos en este rol.</p>
+        <p className="text-gray-400 text-sm">
+          No hay procesos activos en este rol.
+        </p>
       ) : (
         <div className="space-y-4">
           {processes.map((p) => {
-            const style = statusConfig[p.status] || statusConfig["Pendiente"];
+            const estado = p.estado?.toLowerCase();
+            const style = statusConfig[estado] || statusConfig["pendiente"];
+
             return (
               <motion.div
                 key={p.id}
@@ -60,38 +63,32 @@ export default function ActiveProcesses({ processes = [] }) {
                 }}
                 className="p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-200 flex justify-between items-center"
               >
-                {/* Información principal */}
                 <div className="flex-1 pr-4">
-                  <h3 className="font-semibold text-gray-800">{p.name}</h3>
+                  <h3 className="font-semibold text-gray-800">{p.nombre}</h3>
                   <p className="text-sm text-gray-500">
-                    Área:{" "}
-                    <span className="font-medium text-gray-600">{p.area}</span> •{" "}
-                    Responsable:{" "}
-                    <span className="font-medium text-gray-600">{p.responsable}</span>
+                    Lote:{" "}
+                    <span className="font-medium text-gray-600">{p.lote}</span>
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">Fecha: {p.date}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Progreso: {p.progress || 0}%
+                  </p>
 
-                  {/* Barra de progreso */}
                   <div className="mt-3 bg-gray-200 rounded-full h-2.5 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${p.progress}%` }}
+                      animate={{ width: `${p.progress || 0}%` }}
                       transition={{ duration: 0.6 }}
                       className={`h-2.5 rounded-full ${style.bar}`}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {p.progress}% completado
-                  </p>
                 </div>
 
-                {/* Estado y acción */}
                 <div className="flex flex-col items-end gap-2 min-w-[120px]">
                   <span
                     className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border ${style.color}`}
                   >
                     {style.icon}
-                    {p.status}
+                    {p.estado}
                   </span>
                   <button className="text-sm text-blue-600 hover:underline">
                     Ver detalles
@@ -105,5 +102,3 @@ export default function ActiveProcesses({ processes = [] }) {
     </div>
   );
 }
-
-

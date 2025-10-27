@@ -23,7 +23,7 @@ export default function Sidebar() {
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
-  // 🧠 Cargar datos del usuario guardados en localStorage
+  // Cargar datos del usuario guardados en localStorage
   useEffect(() => {
     const data = localStorage.getItem("usuario");
     if (data) setUsuario(JSON.parse(data));
@@ -55,7 +55,7 @@ export default function Sidebar() {
     navigate("/login");
   };
 
-  // === 🧭 Menú dinámico según el rol del usuario ===
+  //  Menú dinámico según el rol del usuario 
   const menuPorRol = {
     admin: [
       { name: "Dashboard", icon: <FaTachometerAlt /> },
