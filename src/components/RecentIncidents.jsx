@@ -1,3 +1,4 @@
+// src/components/RecentIncidents.jsx
 import { AlertCircle } from "lucide-react";
 
 function formatearFecha(fechaISO) {
@@ -22,6 +23,7 @@ export default function RecentIncidents({ incidencias = [] }) {
       case "en proceso":
         return "bg-yellow-100 text-yellow-700";
       case "resuelta":
+      case "completada":
         return "bg-green-100 text-green-700";
       default:
         return "bg-gray-100 text-gray-700";
@@ -39,6 +41,7 @@ export default function RecentIncidents({ incidencias = [] }) {
         <thead>
           <tr className="border-b text-gray-500">
             <th className="text-left py-2">Fecha</th>
+            <th className="text-left py-2">Título</th>
             <th className="text-left py-2">Lote</th>
             <th className="text-left py-2">Estado</th>
             <th className="text-left py-2">Responsable</th>
@@ -46,16 +49,19 @@ export default function RecentIncidents({ incidencias = [] }) {
         </thead>
         <tbody>
           {incidencias.length > 0 ? (
-            incidencias.map((inc, i) => (
+            incidencias.map((inc) => (
               <tr
-                key={i}
+                key={inc.id}
                 className="border-b last:border-0 hover:bg-gray-50 transition"
               >
                 <td className="py-2 text-gray-600">
-                  {formatearFecha(inc.fecha)} {/* ✅ muestra fecha real */}
+                  {formatearFecha(inc.fecha)}
                 </td>
                 <td className="py-2 font-medium text-gray-800">
-                  {inc.lote?.nombre || inc.lote || "Sin asignar"}
+                  {inc.titulo || "Sin título"}
+                </td>
+                <td className="py-2 text-gray-700">
+                  {inc.lote || "Sin lote"}
                 </td>
                 <td className="py-2">
                   <span
@@ -67,13 +73,13 @@ export default function RecentIncidents({ incidencias = [] }) {
                   </span>
                 </td>
                 <td className="py-2">
-                  {inc.responsable || inc.tecnico?.nombre || "No asignado"}
+                  {inc.responsable || "No asignado"}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="text-center text-gray-500 py-4">
+              <td colSpan="5" className="text-center text-gray-500 py-4">
                 Sin incidencias recientes
               </td>
             </tr>

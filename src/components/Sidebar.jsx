@@ -86,16 +86,28 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      {/* === LOGO === */}
-      <div className="logo-section">
-        <div className="logo-container">
-          <FaLeaf size={22} color="#047857" />
-          <div className="logo-text">
-            <span className="logo-title">Raízen</span>
-            <p className="logo-subtitle">Gestión Agrícola</p>
-          </div>
-        </div>
+  {/* === LOGO === */}
+  <div
+    className="logo-section"
+    style={{
+      background: "linear-gradient(135deg, #d1fae5, #86efac, #4ade80)",
+      color: "#064e3b", // color de texto que contrasta
+      padding: "20px",
+      borderRadius: "0 0 12px 12px", // esquinas inferiores redondeadas (opcional)
+    }}
+  >
+    <div className="logo-container" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <FaLeaf size={22} color="#065f46" />
+      <div className="logo-text">
+        <span className="logo-title" style={{ fontWeight: "700" }}>
+          Raízen
+        </span>
+        <p className="logo-subtitle" style={{ fontSize: "14px" }}>
+          Gestión Agrícola
+        </p>
       </div>
+    </div>
+  </div>
 
       {/* === MENÚ PRINCIPAL === */}
       <ul>

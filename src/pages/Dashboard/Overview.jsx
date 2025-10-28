@@ -24,9 +24,12 @@ export default function Overview() {
     const cargarDatos = async () => {
       try {
         const data = await obtenerResumen();
-        if (data) setResumen(data.resumen); // ✅ guarda solo la parte útil
+        // obtenerResumen ya devuelve el objeto 'resumen' del backend (o null)
+        if (data) setResumen(data);
+        else setResumen(null);
       } catch (error) {
         console.error("Error al obtener resumen:", error);
+        setResumen(null);
       } finally {
         setCargando(false);
       }

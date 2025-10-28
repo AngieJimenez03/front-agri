@@ -8,7 +8,6 @@
   font-family: "Roboto", sans-serif;
 }
 
-
 /* === SIDEBAR === */
 .sidebar {
   width: 250px;
@@ -56,7 +55,7 @@
 /* === MENÚ DE NAVEGACIÓN === */
 .sidebar ul {
   list-style: none;
-  margin-top: 0;
+  margin: 0;
   padding: 0;
 }
 
@@ -158,83 +157,84 @@
   overflow: hidden;
 }
 
-/* === TOPBAR === */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8faf8;
+  background: linear-gradient(135deg, #d1fae5, #86efac, #4ade80);
   padding: 1.2rem 2rem;
   border-bottom: 1px solid #e2e8f0;
   height: 95px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   font-family: "Roboto", sans-serif;
+  color: #065f46; /* verde oscuro para contraste */
+  border-radius: 0 0 12px 12px;
 }
-.app-header {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.logo-text-topbar {
-  display: flex;
-  align-items: baseline;
-  font-size: 1.4rem;
-  font-weight: 500;
-}
-
-.app-name {
-  color: #004d26;
-}
-
-.app-name-bold {
-  color: #198754;
-  font-weight: 700;
-}
-
-.divider {
-  width: 1px;
-  height: 45px;
-  background-color: #d1d5db;
-}
-
-.topbar-info {
+.topbar-left {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 4px;
 }
 
 .topbar-title {
-  font-size: 1.9rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #198754;
+  color: #065f46; /* mismo contraste oscuro */
   margin: 0;
 }
 
 .topbar-subtitle {
-  font-size: 0.95rem;
-  color: #6b7280;
-  margin: 0;
+  font-size: 1rem;
+  color: #064e3b; /* ligeramente más oscuro para subtítulo */
+  margin: 0.2rem 0 0 0;
 }
 
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* === ICONO DE NOTIFICACIÓN === */
+.btn-notificacion,
+.btn-asignar-tarea {
+  color: #065f46; /* contraste con el gradiente */
+}
+
+.btn-notificacion:hover {
+  color: #bbf7d0;
+  transform: scale(1.1);
+}
+
+.btn-notificacion {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  font-size: 1.8rem;
+  color: #065f46; /* verde oscuro para buen contraste */
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* === BOTÓN CREAR USUARIO === */
 .btn-asignar-tarea {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #198754;
-  color: white;
-  border: none;
+  background-color: #16a34a; /* verde medio más visible */
+  color: #f0fdf4; /* texto claro para contraste */
+  border: 1px solid #15803d; /* borde que lo resalta */
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* sombra para destacarlo */
 }
 
 .btn-asignar-tarea:hover {
-  background-color: #157347;
+  background-color: #15803d; /* más oscuro al pasar el mouse */
+  transform: scale(1.05);
 }
 
 .icono-mas {
@@ -249,6 +249,7 @@
   overflow-y: auto;
 }
 
+/* === TARJETAS === */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -280,6 +281,110 @@
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   padding: 1.5rem;
+}
+
+/* === GRID PRINCIPAL === */
+.main-grid {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 1.5rem;
+}
+
+/* === PROCESOS ACTIVOS === */
+.procesos-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #14532d;
+  margin-bottom: 1rem;
+}
+
+.process-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.process-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  color: white;
+}
+
+.badge.red {
+  background: #ef4444;
+}
+
+.badge.green {
+  background: #22c55e;
+}
+
+.badge.yellow {
+  background: #f59e0b;
+}
+
+.badge.blue {
+  background: #3b82f6;
+}
+
+.progress-bar {
+  width: 100%;
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+}
+
+/* === ACTIVIDADES === */
+.realtime-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 0;
+}
+
+.activity-name {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.activity-info {
+  font-size: 0.85rem;
+  color: #6b7280;
 }
 
 /* === RESPONSIVIDAD === */
@@ -320,130 +425,4 @@
     align-items: flex-start;
     gap: 10px;
   }
-}
-
-/* === OVERVIEW === */
-.overview-container {
-  padding: 1.5rem 2rem;
-  background-color: #f9fafb;
-  min-height: 100%;
-}
-
-/* Tarjetas de resumen */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.2rem;
-  margin-bottom: 2rem;
-}
-
-.card-metric {
-  background: white;
-  padding: 1.2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s;
-}
-.card-metric:hover {
-  transform: translateY(-3px);
-}
-.metric-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.metric-icon {
-  font-size: 1.6rem;
-}
-.metric-title {
-  font-weight: 600;
-  color: #14532d;
-}
-.metric-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #065f46;
-  margin-top: 0.4rem;
-}
-
-/* === GRID PRINCIPAL === */
-.main-grid {
-  display: grid;
-  grid-template-columns: 2.5fr 1fr;
-  gap: 1.5rem;
-}
-
-/* === PROCESOS ACTIVOS === */
-.procesos-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-.section-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #14532d;
-  margin-bottom: 1rem;
-}
-.process-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-.process-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.6rem;
-  border-radius: 5px;
-  color: white;
-}
-.badge.red { background: #ef4444; }
-.badge.green { background: #22c55e; }
-.badge.yellow { background: #f59e0b; }
-.badge.blue { background: #3b82f6; }
-.progress-bar {
-  width: 100%;
-  background: #e5e7eb;
-  height: 8px;
-  border-radius: 4px;
-  margin-top: 0.5rem;
-}
-.progress {
-  height: 8px;
-  border-radius: 4px;
-}
-
-/* === ACTIVIDADES === */
-.realtime-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-.activity-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.activity-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 0.75rem 0;
-}
-.activity-name {
-  font-weight: 500;
-  color: #1f2937;
-}
-.activity-info {
-  font-size: 0.85rem;
-  color: #6b7280;
 }

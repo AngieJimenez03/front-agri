@@ -13,12 +13,12 @@ export default function DashboardCards({ rol, data = {} }) {
   let metrics = [];
 
   if (rol === "admin") {
-    metrics = [
-      { title: "Total Lotes", value: data.totalLotes, Icon: MapPin, color: "bg-blue-500" },
-      { title: "Tareas Pendientes", value: data.tareasPendientes, Icon: ClipboardList, color: "bg-yellow-500" },
-      { title: "Técnicos Activos", value: data.usuariosActivos, Icon: Users, color: "bg-green-500" },
-      { title: "Incidencias", value: data.incidencias, Icon: AlertTriangle, color: "bg-red-500" },
-    ];
+  metrics = [
+    { title: "Total Lotes", value: data.totalLotes, Icon: MapPin, color: "bg-blue-500" },
+    { title: "Tareas Pendientes", value: data.tareasPendientes, Icon: ClipboardList, color: "bg-yellow-500" },
+    { title: "Técnicos Activos", value: data.usuariosActivos, Icon: Users, color: "bg-green-500" },
+    { title: "Incidencias", value: data.totalIncidencias, Icon: AlertTriangle, color: "bg-red-500" }, 
+  ];
   } else if (rol === "supervisor") {
     metrics = [
       { title: "Lotes Supervisados", value: data.lotesSupervisados, Icon: MapPin, color: "bg-blue-500" },

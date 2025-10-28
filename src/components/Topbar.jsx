@@ -1,12 +1,12 @@
 // src/components/Topbar.jsx
 import { FiPlus } from "react-icons/fi";
+import { HiOutlineBellAlert } from "react-icons/hi2";
 import "../styles/dashboard.css";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Topbar() {
   const { rol } = useAuth();
 
-  // ✅ Solo el admin ve el botón y dice "Crear usuario"
   const botonesPorRol = {
     admin: { texto: "Crear usuario", visible: true },
     supervisor: { texto: "", visible: false },
@@ -24,14 +24,19 @@ export default function Topbar() {
         </p>
       </div>
 
-      {visible && (
-        <button className="btn-asignar-tarea">
-          <FiPlus className="icono-mas" />
-          {texto}
+      <div className="topbar-right">
+        {/* 🔔 Icono de notificación */}
+        <button className="btn-notificacion">
+          <HiOutlineBellAlert className="icono-notificacion" />
         </button>
-      )}
+
+        {visible && (
+          <button className="btn-asignar-tarea">
+            <FiPlus className="icono-mas" />
+            {texto}
+          </button>
+        )}
+      </div>
     </header>
   );
 }
-
-
