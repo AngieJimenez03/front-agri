@@ -1,4 +1,4 @@
-// src/services/loteService.js
+// src/services/lotsService.js
 import axios from "axios";
 
 const API = "http://localhost:5100/api/lots";

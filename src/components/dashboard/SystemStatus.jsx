@@ -1,11 +1,11 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function SystemStatus({ data = {} }) {
-  // ✅ Extrae valores de forma segura
+  //  Extrae valores de forma segura
   const tareasCompletadas = data?.tareasCompletadas || 0;
   const tareasPendientes = data?.tareasPendientes || 0;
 
-  // ✅ Prepara los datos para el gráfico
+  //  Prepara los datos para el gráfico
   const chartData =
     tareasCompletadas === 0 && tareasPendientes === 0
       ? [{ name: "Sin datos", value: 1, color: "#E5E7EB" }] // gris
@@ -14,7 +14,7 @@ export default function SystemStatus({ data = {} }) {
           { name: "Pendientes", value: tareasPendientes, color: "#facc15" },
         ];
 
-  // ✅ Calcula total solo si hay datos reales
+  // Calcula total solo si hay datos reales
   const total =
     tareasCompletadas + tareasPendientes === 0
       ? "Sin datos"
@@ -44,7 +44,7 @@ export default function SystemStatus({ data = {} }) {
           </PieChart>
         </ResponsiveContainer>
 
-        {/* ✅ Texto dinámico debajo */}
+        
         <p className="text-gray-600 text-sm mt-3">
           {total === "Sin datos" ? (
             <span className="text-gray-400">No hay datos disponibles</span>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useSocket } from "../context/SocketContext";
-import { useLote } from "../context/LoteContext";
+import { useSocket } from "../../context/SocketContext";
+import { useLote } from "../../context/LoteContext";
 import { Send } from "lucide-react";
 
 export default function ChatPanel({ open, onClose }) {

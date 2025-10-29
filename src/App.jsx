@@ -1,3 +1,4 @@
+// src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
@@ -6,17 +7,19 @@ import Overview from "./pages/Dashboard/Overview";
 import Usuarios from "./pages/Dashboard/Users";
 import Tareas from "./pages/Dashboard/Tasks";
 import Lotes from "./pages/Dashboard/Lots";
-import ChatPanel from "./components/ChatPanel"; 
-import ProtectedRoute from "./components/ProtectedRoute";
+import ChatPanel from "./components/messages/ChatPanel";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rutas públicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        {/* Rutas protegidas */}
         <Route
           path="/dashboard/*"
           element={
@@ -26,10 +29,10 @@ export default function App() {
           }
         >
           <Route index element={<Overview />} />
-          <Route path="usuarios" element={<Usuarios />} />
+          <Route path="lotes" element={<Lotes />} />
           <Route path="tareas" element={<Tareas />} />
-          <Route path="lotes" element={<Lotes />} /> {}
-          <Route path="chat" element={<ChatPanel />} /> {}
+          <Route path="usuarios" element={<Usuarios />} />
+          <Route path="chat" element={<ChatPanel />} />
         </Route>
       </Routes>
     </BrowserRouter>

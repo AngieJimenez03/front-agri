@@ -1,7 +1,7 @@
 // src/pages/Dashboard/Usuarios.jsx
 import { useEffect, useState } from "react";
 import API from "../../services/api";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/common/Spinner";
 
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState(null);

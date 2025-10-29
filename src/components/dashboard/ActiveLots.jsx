@@ -1,7 +1,7 @@
 // src/components/LotesActivos.jsx
 import { useEffect, useState } from "react";
 import { obtenerLotes } from "../services/loteService";
-import { useLote } from "../context/LoteContext";
+import { useLote } from "../../context/LoteContext";
 import { Chat } from "lucide-react";
 
 export default function LotesActivos() {

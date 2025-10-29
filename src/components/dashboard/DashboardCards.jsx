@@ -1,5 +1,5 @@
 // src/components/DashboardCards.jsx
-import CardMetric from "./CardMetric";
+import CardMetric from "../common/CardMetric";
 import {
   MapPin,
   ClipboardList,

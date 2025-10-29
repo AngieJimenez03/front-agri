@@ -1,8 +1,8 @@
-import DashboardCards from "../../components/DashboardCards";
-import SystemStatus from "../../components/SystemStatus";
-import RecentIncidents from "../../components/RecentIncidents";
-import ActiveProcesses from "../../components/ActiveProcesses";
-import RealTimeActivities from "../../components/RealTimeActivities";
+import DashboardCards from "../../components/dashboard/DashboardCards";
+import SystemStatus from "../../components/dashboard/SystemStatus";
+import RecentIncidents from "../../components/dashboard/RecentIncidents";
+import ActiveProcesses from "../../components/dashboard/ActiveProcesses";
+import RealTimeActivities from "../../components/dashboard/RealTimeActivities";
 import "../../styles/dashboard.css";
 import { useState, useEffect } from "react";
 import { obtenerResumen } from "../../services/dashboardService";

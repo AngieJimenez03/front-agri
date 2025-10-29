@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useSocket } from "../context/SocketContext";
-import { useLote } from "../context/LoteContext";
+import { useSocket } from "../../context/SocketContext";
+import { useLote } from "../../context/LoteContext";
 
 export default function ChatLote() {
   const socket = useSocket();

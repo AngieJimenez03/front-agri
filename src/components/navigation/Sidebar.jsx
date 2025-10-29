@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
-import "../styles/dashboard.css";
+import "../../styles/dashboard.css";
 
 export default function Sidebar() {
   const [active, setActive] = useState("Dashboard");
@@ -23,13 +23,13 @@ export default function Sidebar() {
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
-  // Cargar datos del usuario guardados en localStorage
+  // Cargar datos del usuario desde localStorage
   useEffect(() => {
     const data = localStorage.getItem("usuario");
     if (data) setUsuario(JSON.parse(data));
   }, []);
 
-  // Cerrar menú si se hace clic afuera
+  // Cerrar menú al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target))
@@ -55,7 +55,7 @@ export default function Sidebar() {
     navigate("/login");
   };
 
-  //  Menú dinámico según el rol del usuario 
+  // Menú dinámico según rol
   const menuPorRol = {
     admin: [
       { name: "Dashboard", icon: <FaTachometerAlt /> },
@@ -74,47 +74,63 @@ export default function Sidebar() {
       { name: "Chat", icon: <FaComments /> },
     ],
     tecnico: [
-  { name: "Dashboard", icon: <FaTachometerAlt /> },
-  { name: "Mis Tareas", icon: <FaTasks /> },
-  { name: "Lotes", icon: <FaMapMarkedAlt /> },
-  { name: "Incidencias", icon: <FaExclamationTriangle /> },
-  { name: "Chat", icon: <FaComments /> },
-],
+      { name: "Dashboard", icon: <FaTachometerAlt /> },
+      { name: "Mis Tareas", icon: <FaTasks /> },
+      { name: "Lotes", icon: <FaMapMarkedAlt /> },
+      { name: "Incidencias", icon: <FaExclamationTriangle /> },
+      { name: "Chat", icon: <FaComments /> },
+    ],
   };
 
   const menuItems = menuPorRol[usuario.rol] || [];
 
   return (
     <aside className="sidebar">
-  {/* === LOGO === */}
-  <div
-    className="logo-section"
-    style={{
-      background: "linear-gradient(135deg, #d1fae5, #86efac, #4ade80)",
-      color: "#064e3b", // color de texto que contrasta
-      padding: "20px",
-      borderRadius: "0 0 12px 12px", // esquinas inferiores redondeadas (opcional)
-    }}
-  >
-    <div className="logo-container" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <FaLeaf size={22} color="#065f46" />
-      <div className="logo-text">
-        <span className="logo-title" style={{ fontWeight: "700" }}>
-          Raízen
-        </span>
-        <p className="logo-subtitle" style={{ fontSize: "14px" }}>
-          Gestión Agrícola
-        </p>
+      {/* === LOGO === */}
+      <div
+        className="logo-section"
+        style={{
+          background: "linear-gradient(135deg, #d1fae5, #86efac, #4ade80)",
+          color: "#064e3b",
+          padding: "20px",
+          borderRadius: "0 0 12px 12px",
+        }}
+      >
+        <div
+          className="logo-container"
+          style={{ display: "flex", alignItems: "center", gap: "10px" }}
+        >
+          <FaLeaf size={22} color="#065f46" />
+          <div className="logo-text">
+            <span className="logo-title" style={{ fontWeight: "700" }}>
+              Raízen
+            </span>
+            <p className="logo-subtitle" style={{ fontSize: "14px" }}>
+              Gestión Agrícola
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
       {/* === MENÚ PRINCIPAL === */}
       <ul>
         {menuItems.map((item) => (
           <li
             key={item.name}
-            onClick={() => setActive(item.name)}
+            onClick={() => {
+              setActive(item.name);
+
+              if (item.name === "Dashboard") navigate("/dashboard");
+              if (item.name === "Lotes") navigate("/dashboard/lotes");
+              if (item.name === "Tareas" || item.name === "Mis Tareas")
+                navigate("/dashboard/tareas");
+              if (item.name === "Incidencias")
+                navigate("/dashboard/incidencias");
+              if (item.name === "Chat") navigate("/dashboard/chat");
+              if (item.name === "Usuarios") navigate("/dashboard/usuarios");
+              if (item.name === "Configuración")
+                navigate("/dashboard/configuracion");
+            }}
             className={classNames({ active: active === item.name })}
           >
             {item.icon} {item.name}
