@@ -3,8 +3,10 @@ import { getTasks, createTask, updateTask, deleteTask } from "@/services/tasksSe
 import TasksGrid from "@/components/tasks/TasksGrid";
 import TaskForm from "@/components/tasks/TaskForm";
 import { FiPlus, FiRefreshCcw, FiX } from "react-icons/fi";
+import { useSocket } from "@/context/SocketContext";
 
 export default function Tareas() {
+  const socket = useSocket();
   const [tareas, setTareas] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [estado, setEstado] = useState("");
@@ -33,6 +35,24 @@ export default function Tareas() {
       setCargando(false);
     }
   }
+ useEffect(() => {
+    if (!socket) return;
+
+    socket.on("tarea_actualizada", (data) => {
+      console.log(" Actualización recibida:", data);
+      setTareas((prevTareas) =>
+        prevTareas.map((t) =>
+          t._id === data.tareaId
+            ? { ...t, estado: data.nuevoEstado }
+            : t
+        )
+      );
+    });
+
+    return () => {
+      socket.off("tarea_actualizada");
+    };
+  }, [socket]);
 
   async function handleCrearTarea(datos) {
     try {

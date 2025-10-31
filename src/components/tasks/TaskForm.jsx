@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { obtenerLotes } from "@/services/lotsService";
 import { getUsersByRole } from "@/services/userService";
-import { format, utcToZonedTime } from "date-fns-tz"; // 🕓 Manejo de zona horaria
+import { format } from "date-fns-tz";
+// ✅ Importar socket
 
 export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
   const [form, setForm] = useState({
@@ -15,30 +16,26 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
 
   const [lotes, setLotes] = useState([]);
   const [tecnicos, setTecnicos] = useState([]);
+  // ✅ Inicializar socket
 
-  // 🔄 Cargar lotes y técnicos
   useEffect(() => {
     cargarLotes();
     cargarTecnicos();
   }, []);
 
-  // 🧩 Llenar formulario al editar (manteniendo valores)
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
       setForm((prev) => {
         let fechaAjustada = prev.fechaLimite;
-
         if (initialData.fechaLimite) {
           try {
-            // 🔹 Convertir fecha UTC de la BD a zona local del usuario
             const zonaLocal = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            const fechaLocal = utcToZonedTime(initialData.fechaLimite, zonaLocal);
-            fechaAjustada = format(fechaLocal, "yyyy-MM-dd");
+            const fechaLocal = new Date(initialData.fechaLimite);
+            fechaAjustada = format(fechaLocal, "yyyy-MM-dd", { timeZone: zonaLocal });
           } catch (error) {
             console.error("Error ajustando fecha límite:", error);
           }
         }
-
         return {
           ...prev,
           titulo: initialData.titulo ?? prev.titulo,
@@ -46,15 +43,13 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
           fechaLimite: fechaAjustada,
           lote: initialData.lote?._id ?? initialData.lote ?? prev.lote,
           tecnicosAsignados:
-            initialData.tecnicosAsignados?.map((t) => t._id || t) ??
-            prev.tecnicosAsignados,
+            initialData.tecnicosAsignados?.map((t) => t._id || t) ?? prev.tecnicosAsignados,
           estado: initialData.estado ?? prev.estado,
         };
       });
     }
   }, [initialData]);
 
-  // 🔹 Cargar lotes
   async function cargarLotes() {
     try {
       const data = await obtenerLotes();
@@ -64,7 +59,6 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
     }
   }
 
-  // 🔹 Cargar técnicos
   async function cargarTecnicos() {
     try {
       const data = await getUsersByRole("tecnico");
@@ -74,7 +68,6 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
     }
   }
 
-  // 🔹 Manejadores de formulario
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -84,26 +77,25 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
     setForm({ ...form, tecnicosAsignados: seleccionados });
   };
 
-  // 🔹 Enviar formulario
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  let fechaNormalizada = null;
+    let fechaNormalizada = null;
+    if (form.fechaLimite) {
+      const [year, month, day] = form.fechaLimite.split("-");
+      fechaNormalizada = new Date(year, month - 1, day, 12, 0, 0);
+    }
 
-  if (form.fechaLimite) {
-    const [year, month, day] = form.fechaLimite.split("-");
-    // 🔹 Crear fecha local sin desfase UTC
-    fechaNormalizada = new Date(year, month - 1, day, 12, 0, 0); 
-    // Usar 12:00 para evitar cruces en medianoche UTC
-  }
+    const datosFinales = {
+      ...form,
+      fechaLimite: fechaNormalizada ? fechaNormalizada.toISOString() : null,
+    };
 
-  const datosFinales = {
-    ...form,
-    fechaLimite: fechaNormalizada ? fechaNormalizada.toISOString() : null,
+    
+
+    // 🔹 Ejecutar callback del padre (guardar en BD)
+    onSubmit(datosFinales);
   };
-
-  onSubmit(datosFinales);
-};
 
   const esEdicion = Boolean(initialData && initialData._id);
 
@@ -113,7 +105,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         {esEdicion ? "Editar tarea" : "Crear nueva tarea"}
       </h2>
 
-      {/* 🔹 Título */}
+      {/* Título */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Título</label>
         <input
@@ -127,7 +119,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         />
       </div>
 
-      {/* 🔹 Tipo */}
+      {/* Tipo */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Tipo de tarea</label>
         <select
@@ -142,7 +134,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         </select>
       </div>
 
-      {/* 🔹 Estado (solo visible en edición) */}
+      {/* Estado (solo edición) */}
       {esEdicion && (
         <div>
           <label className="block text-sm font-medium text-gray-700">Estado</label>
@@ -160,7 +152,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         </div>
       )}
 
-      {/* 🔹 Fecha límite */}
+      {/* Fecha límite */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Fecha límite</label>
         <input
@@ -173,7 +165,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         />
       </div>
 
-      {/* 🔹 Lote */}
+      {/* Lote */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Lote</label>
         <select
@@ -192,7 +184,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         </select>
       </div>
 
-      {/* 🔹 Técnicos */}
+      {/* Técnicos */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Técnicos asignados</label>
         <div className="border rounded-lg overflow-hidden">
@@ -213,12 +205,9 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
             )}
           </select>
         </div>
-        <p className="text-xs text-gray-500 mt-1">
-          Mantén presionada la tecla Ctrl (o Cmd en Mac) para seleccionar varios.
-        </p>
       </div>
 
-      {/* 🔹 Botones */}
+      {/* Botones */}
       <div className="flex justify-end gap-2 mt-4">
         <button type="button" onClick={onCancel} className="px-3 py-1 border rounded-lg">
           Cancelar
