@@ -28,7 +28,7 @@ const handleSubmit = async (e) => {
     if (data?.usuario) {
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-      // ✅ Guardar también el rol para usar en el dashboard
+      // Guardar también el rol para usar en el dashboard
       if (data.usuario.rol) {
         localStorage.setItem("rol", data.usuario.rol.toLowerCase());
       }
