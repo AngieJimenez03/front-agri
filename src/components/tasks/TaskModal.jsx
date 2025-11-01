@@ -26,7 +26,7 @@ export default function TaskModal({ lote, onClose, onTareaCreada }) {
       onClose();
     } catch (err) {
       console.error("Error creando tarea desde modal:", err);
-      alert("❌ Error al crear la tarea (revisa la consola).");
+      alert(" Error al crear la tarea (revisa la consola).");
     } finally {
       setLoading(false);
     }

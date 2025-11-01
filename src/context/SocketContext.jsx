@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const SocketContext = createContext(null);
-const SOCKET_URL = "http://localhost:5100";
+const SOCKET_URL = "http://localhost:5100"; // asegúrate que coincida con tu backend
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -11,36 +11,35 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
+
     if (!token || !user) return;
 
-    // Crear socket
+    // ✅ Conexión con el backend y autenticación JWT
     const newSocket = io(SOCKET_URL, {
       auth: { token },
-      transports: ["websocket"],
+      transports: ["websocket"], // fuerza WebSocket y evita reconexiones innecesarias
     });
 
-    // Guardar en estado
     setSocket(newSocket);
 
+    // Cuando se conecta
     newSocket.on("connect", () => {
-      console.log("🔌 Conectado a Socket.IO como:", user.email);
+      console.log("✅ Conectado a Socket.IO como:", user.email);
 
-      // 🔹 Unir al usuario a las salas según su rol
-      if (user.rol === "admin") {
-        newSocket.emit("join_room", { room: "admin" });
-      } else if (user.rol === "supervisor") {
-        newSocket.emit("join_room", { room: `supervisor:${user.email}` });
-      } else if (user.rol === "tecnico" && user.lotesAsignados?.length) {
-        user.lotesAsignados.forEach((loteId) =>
-          newSocket.emit("join_room", { room: `lote:${loteId}` })
-        );
-      }
+      // 🔹 Enviamos unión manual a salas según el usuario
+      newSocket.emit("joinRoom", {
+        rol: user.rol,
+        email: user.email,
+        lotes: user.lotesAsignados || [],
+      });
     });
 
+    // Cuando se desconecta
     newSocket.on("disconnect", () => {
       console.log("❌ Desconectado de Socket.IO");
     });
 
+    // Limpieza cuando se desmonta el componente
     return () => newSocket.disconnect();
   }, []);
 
@@ -49,4 +48,5 @@ export const SocketProvider = ({ children }) => {
   );
 };
 
+// Hook para usar el socket en cualquier componente
 export const useSocket = () => useContext(SocketContext);

@@ -9,7 +9,7 @@ export default function RealTimeActivities() {
     const token = localStorage.getItem("token");
 
     // ✅ 1. Cargar datos persistentes del backend
-    fetch("http://localhost:5100/api/tareas/actividades", {
+    fetch("http://localhost:5100/api/tasks/actividades", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
