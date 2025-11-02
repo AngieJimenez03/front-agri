@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { obtenerLotes } from "@/services/lotsService";
 import { getUsersByRole } from "@/services/userService";
 import { format } from "date-fns-tz";
-// ✅ Importar socket
 
 export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
   const [form, setForm] = useState({
@@ -16,7 +15,6 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
 
   const [lotes, setLotes] = useState([]);
   const [tecnicos, setTecnicos] = useState([]);
-  // ✅ Inicializar socket
 
   useEffect(() => {
     cargarLotes();
@@ -68,9 +66,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
     }
   }
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleTecnicosChange = (e) => {
     const seleccionados = Array.from(e.target.selectedOptions).map((o) => o.value);
@@ -91,42 +87,43 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
       fechaLimite: fechaNormalizada ? fechaNormalizada.toISOString() : null,
     };
 
-    
-
-    // 🔹 Ejecutar callback del padre (guardar en BD)
     onSubmit(datosFinales);
   };
 
   const esEdicion = Boolean(initialData && initialData._id);
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-white rounded-lg shadow-md space-y-3">
-      <h2 className="text-lg font-semibold text-gray-700">
-        {esEdicion ? "Editar tarea" : "Crear nueva tarea"}
+    <form
+      onSubmit={handleSubmit}
+      className="p-6 bg-white rounded-2xl shadow-xl border border-gray-100 space-y-5 transition-all duration-200"
+    >
+      {/* Título principal */}
+      <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 text-center">
+        {esEdicion ? "Editar tarea" : "Nueva tarea"}
       </h2>
 
-      {/* Título */}
+      {/* Campo: Título */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Título</label>
+        <label className="block text-sm font-medium text-gray-600 mb-1">Título</label>
         <input
           type="text"
           name="titulo"
           value={form.titulo}
           onChange={handleChange}
-          placeholder="Título de la tarea"
-          className="w-full border rounded-lg px-3 py-2"
+          placeholder="Ej: Riego del Lote A"
+          className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
           required
         />
       </div>
 
-      {/* Tipo */}
+      {/* Campo: Tipo */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Tipo de tarea</label>
+        <label className="block text-sm font-medium text-gray-600 mb-1">Tipo de tarea</label>
         <select
           name="tipo"
           value={form.tipo}
           onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
         >
           <option value="riego">Riego</option>
           <option value="fertilizacion">Fertilización</option>
@@ -134,45 +131,27 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         </select>
       </div>
 
-      {/* Estado (solo edición) */}
-      {esEdicion && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Estado</label>
-          <select
-            name="estado"
-            value={form.estado}
-            onChange={handleChange}
-            className="w-full border rounded-lg px-3 py-2"
-          >
-            <option value="pendiente">Pendiente</option>
-            <option value="en_proceso">En proceso</option>
-            <option value="completada">Completada</option>
-            <option value="retrasada">Retrasada</option>
-          </select>
-        </div>
-      )}
-
-      {/* Fecha límite */}
+      {/* Campo: Fecha límite */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Fecha límite</label>
+        <label className="block text-sm font-medium text-gray-600 mb-1">Fecha límite</label>
         <input
           type="date"
           name="fechaLimite"
           value={form.fechaLimite}
           onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
           required
         />
       </div>
 
-      {/* Lote */}
+      {/* Campo: Lote */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Lote</label>
+        <label className="block text-sm font-medium text-gray-600 mb-1">Lote</label>
         <select
           name="lote"
           value={form.lote}
           onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
           required
         >
           <option value="">Selecciona un lote</option>
@@ -184,15 +163,15 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         </select>
       </div>
 
-      {/* Técnicos */}
+      {/* Campo: Técnicos */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Técnicos asignados</label>
-        <div className="border rounded-lg overflow-hidden">
+        <label className="block text-sm font-medium text-gray-600 mb-1">Técnicos asignados</label>
+        <div className="border border-gray-200 rounded-xl bg-gray-50 focus-within:ring-2 focus-within:ring-green-500">
           <select
             multiple
             value={form.tecnicosAsignados}
             onChange={handleTecnicosChange}
-            className="w-full px-3 py-2 h-28 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
+            className="w-full px-4 py-2 h-28 bg-transparent outline-none text-gray-700"
           >
             {tecnicos.length > 0 ? (
               tecnicos.map((t) => (
@@ -208,13 +187,17 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
       </div>
 
       {/* Botones */}
-      <div className="flex justify-end gap-2 mt-4">
-        <button type="button" onClick={onCancel} className="px-3 py-1 border rounded-lg">
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+        >
           Cancelar
         </button>
         <button
           type="submit"
-          className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          className="px-4 py-2 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl shadow-sm transition-all"
         >
           Guardar
         </button>
