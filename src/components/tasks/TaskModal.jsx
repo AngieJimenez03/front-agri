@@ -14,7 +14,7 @@ export default function TaskModal({ lote, onClose, onTareaCreada }) {
 
       // Forzamos que la tarea pertenezca a este lote
       const payload = { ...datos, lote: lote._id };
-      console.log("📤 Enviando tarea al backend:", payload);
+      console.log(" Enviando tarea al backend:", payload);
 
       // Llamada real al backend
       await createTask(payload);

@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const SocketContext = createContext(null);
-const SOCKET_URL = "http://localhost:5100"; // asegúrate que coincida con tu backend
+const SOCKET_URL = "http://localhost:5100";
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -11,22 +11,20 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
-
     if (!token || !user) return;
 
-    // ✅ Conexión con el backend y autenticación JWT
     const newSocket = io(SOCKET_URL, {
+      transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
       auth: { token },
-      transports: ["websocket"], // fuerza WebSocket y evita reconexiones innecesarias
     });
 
     setSocket(newSocket);
 
-    // Cuando se conecta
     newSocket.on("connect", () => {
-      console.log("✅ Conectado a Socket.IO como:", user.email);
-
-      // 🔹 Enviamos unión manual a salas según el usuario
+      console.log(` Socket conectado: ${user.email}`);
       newSocket.emit("joinRoom", {
         rol: user.rol,
         email: user.email,
@@ -34,12 +32,14 @@ export const SocketProvider = ({ children }) => {
       });
     });
 
-    // Cuando se desconecta
-    newSocket.on("disconnect", () => {
-      console.log("❌ Desconectado de Socket.IO");
-    });
+    newSocket.on("connect_error", (err) =>
+      console.error(" Error en Socket:", err.message)
+    );
 
-    // Limpieza cuando se desmonta el componente
+    newSocket.on("disconnect", (reason) =>
+      console.warn(" Socket desconectado:", reason)
+    );
+
     return () => newSocket.disconnect();
   }, []);
 
@@ -48,5 +48,4 @@ export const SocketProvider = ({ children }) => {
   );
 };
 
-// Hook para usar el socket en cualquier componente
 export const useSocket = () => useContext(SocketContext);

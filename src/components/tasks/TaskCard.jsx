@@ -1,10 +1,11 @@
+// src/components/tasks/TaskCard.jsx
 import { useState } from "react";
 import { FiEdit2, FiTrash2, FiRepeat, FiX } from "react-icons/fi";
 import { createPortal } from "react-dom";
 import { updateTaskStatus } from "@/services/tasksService";
 import toast from "react-hot-toast";
 
-export default function TaskCard({ task, onEdit, onDelete, rol, onStatusChange }) {
+export default function TaskCard({ task, onEdit, onDelete, rol }) {
   const [mostrarEstado, setMostrarEstado] = useState(false);
   const [nuevoEstado, setNuevoEstado] = useState(task.estado);
 
@@ -19,7 +20,9 @@ export default function TaskCard({ task, onEdit, onDelete, rol, onStatusChange }
     }[task.estado] || "bg-gray-100 text-gray-700";
 
   const fecha = task.fechaLimite
-    ? new Date(task.fechaLimite).toLocaleDateString("es-CO", { timeZone: "America/Bogota" })
+    ? new Date(task.fechaLimite).toLocaleDateString("es-CO", {
+        timeZone: "America/Bogota",
+      })
     : "Sin fecha";
 
   async function handleCambiarEstado() {
@@ -28,7 +31,7 @@ export default function TaskCard({ task, onEdit, onDelete, rol, onStatusChange }
       await updateTaskStatus(task._id, nuevoEstado);
       toast.success(`Estado cambiado a "${nuevoEstado}"`);
       setMostrarEstado(false);
-      onStatusChange?.();
+      // ⚡ No recargamos nada, el socket actualizará automáticamente
     } catch (error) {
       console.error("Error al cambiar estado:", error);
       toast.error("No se pudo actualizar el estado");
@@ -37,7 +40,6 @@ export default function TaskCard({ task, onEdit, onDelete, rol, onStatusChange }
 
   return (
     <>
-      {/* 🔹 Celdas dentro del tr */}
       <td className="px-4 py-3">
         <span className={`px-3 py-1 rounded-full text-xs font-medium ${estadoColor}`}>
           {task.estado?.replace("_", " ").toUpperCase()}
@@ -80,7 +82,6 @@ export default function TaskCard({ task, onEdit, onDelete, rol, onStatusChange }
         )}
       </td>
 
-      {/* 🔹 Modal renderizado fuera del tr */}
       {mostrarEstado &&
         createPortal(
           <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
@@ -120,7 +121,7 @@ export default function TaskCard({ task, onEdit, onDelete, rol, onStatusChange }
               </div>
             </div>
           </div>,
-          document.body // 👈 el modal se monta aquí fuera del <table>
+          document.body
         )}
     </>
   );
