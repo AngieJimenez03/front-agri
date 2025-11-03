@@ -31,7 +31,7 @@ export default function TaskCard({ task, onEdit, onDelete, rol }) {
       await updateTaskStatus(task._id, nuevoEstado);
       toast.success(`Estado cambiado a "${nuevoEstado}"`);
       setMostrarEstado(false);
-      // ⚡ No recargamos nada, el socket actualizará automáticamente
+      //  No recargamos nada, el socket actualizará automáticamente
     } catch (error) {
       console.error("Error al cambiar estado:", error);
       toast.error("No se pudo actualizar el estado");

@@ -3,7 +3,7 @@ import { obtenerLotes } from "@/services/lotsService";
 import { getUsersByRole } from "@/services/userService";
 import { format } from "date-fns-tz";
 
-export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
+export default function TaskForm({ onSubmit, onCancel, initialData = {}, loteFijo = null }) {
   const [form, setForm] = useState({
     titulo: "",
     tipo: "riego",
@@ -17,7 +17,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
   const [tecnicos, setTecnicos] = useState([]);
 
   useEffect(() => {
-    cargarLotes();
+    if (!loteFijo) cargarLotes(); // solo si no hay lote fijo
     cargarTecnicos();
   }, []);
 
@@ -39,14 +39,14 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
           titulo: initialData.titulo ?? prev.titulo,
           tipo: initialData.tipo ?? prev.tipo,
           fechaLimite: fechaAjustada,
-          lote: initialData.lote?._id ?? initialData.lote ?? prev.lote,
+          lote: initialData.lote?._id ?? initialData.lote ?? loteFijo ?? prev.lote,
           tecnicosAsignados:
             initialData.tecnicosAsignados?.map((t) => t._id || t) ?? prev.tecnicosAsignados,
           estado: initialData.estado ?? prev.estado,
         };
       });
     }
-  }, [initialData]);
+  }, [initialData, loteFijo]);
 
   async function cargarLotes() {
     try {
@@ -84,6 +84,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
 
     const datosFinales = {
       ...form,
+      lote: loteFijo || form.lote, // usa el lote fijo si lo hay
       fechaLimite: fechaNormalizada ? fechaNormalizada.toISOString() : null,
     };
 
@@ -97,12 +98,11 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
       onSubmit={handleSubmit}
       className="p-6 bg-white rounded-2xl shadow-xl border border-gray-100 space-y-5 transition-all duration-200"
     >
-      {/* Título principal */}
       <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 text-center">
         {esEdicion ? "Editar tarea" : "Nueva tarea"}
       </h2>
 
-      {/* Campo: Título */}
+      {/* Título */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">Título</label>
         <input
@@ -116,7 +116,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         />
       </div>
 
-      {/* Campo: Tipo */}
+      {/* Tipo */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">Tipo de tarea</label>
         <select
@@ -131,7 +131,7 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         </select>
       </div>
 
-      {/* Campo: Fecha límite */}
+      {/* Fecha límite */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">Fecha límite</label>
         <input
@@ -144,26 +144,28 @@ export default function TaskForm({ onSubmit, onCancel, initialData = {} }) {
         />
       </div>
 
-      {/* Campo: Lote */}
-      <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1">Lote</label>
-        <select
-          name="lote"
-          value={form.lote}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
-          required
-        >
-          <option value="">Selecciona un lote</option>
-          {lotes.map((l) => (
-            <option key={l._id} value={l._id}>
-              {l.nombre}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Lote — solo si no viene lote fijo */}
+      {!loteFijo && (
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Lote</label>
+          <select
+            name="lote"
+            value={form.lote}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
+            required
+          >
+            <option value="">Selecciona un lote</option>
+            {lotes.map((l) => (
+              <option key={l._id} value={l._id}>
+                {l.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
-      {/* Campo: Técnicos */}
+      {/* Técnicos */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">Técnicos asignados</label>
         <div className="border border-gray-200 rounded-xl bg-gray-50 focus-within:ring-2 focus-within:ring-green-500">

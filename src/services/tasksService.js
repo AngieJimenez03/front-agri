@@ -3,9 +3,10 @@ import axios from "axios";
 
 const API = "http://localhost:5100/api/tasks";
 
-export async function getTasks() {
+export async function getTasks(loteId = null) {
   const token = localStorage.getItem("token");
-  const res = await axios.get(API, {
+  const url = loteId ? `${API}?loteId=${loteId}` : API; // 👈 Si viene, agrega query
+  const res = await axios.get(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
