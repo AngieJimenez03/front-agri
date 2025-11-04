@@ -1,4 +1,4 @@
-// src/pages/Dashboard/Incidents.jsx
+/// src/pages/Dashboard/Incidents.jsx
 import { useEffect, useState } from "react";
 import { getIncidents } from "../../services/incidentsService";
 import IncidentGrid from "../../components/incidents/IncidentGrid";

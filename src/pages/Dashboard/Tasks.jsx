@@ -18,8 +18,7 @@ export default function Tasks() {
   const [tareaEditando, setTareaEditando] = useState(null);
   const [confirmarEliminar, setConfirmarEliminar] = useState(null);
   const [searchParams] = useSearchParams();
-  const loteParam = searchParams.get("lote"); // 👈 leer ?lote=
-
+  const loteParam = searchParams.get("lote"); 
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const rol = user.rol || "tecnico";
 
@@ -30,7 +29,7 @@ export default function Tasks() {
       const data = await getTasks();
       let lista = Array.isArray(data) ? data : [];
 
-      // 🔥 Si hay un lote en la URL, filtrar las tareas
+      //  Si hay un lote en la URL, filtrar las tareas
       if (loteParam) {
         lista = lista.filter((t) => t.lote && t.lote._id === loteParam);
       }

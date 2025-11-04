@@ -41,7 +41,7 @@ export async function deleteTask(id) {
   return res.data;
 }
 
-/* ✅ Nuevo método para cambiar solo el estado */
+
 export async function updateTaskStatus(id, nuevoEstado) {
   const token = localStorage.getItem("token");
   const res = await axios.put(

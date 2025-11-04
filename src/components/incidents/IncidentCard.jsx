@@ -38,125 +38,163 @@ export default function IncidentCard({ incident, onStatusChange, onEdit, onDelet
     }
   };
 
-  const handleGuardarEdicion = async () => {
-    try {
-      await axios.put(
-        `http://localhost:5100/api/incidents/${incident.id}`,
-        { descripcion: editDescripcion, estado: editEstado },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success("Incidencia actualizada correctamente");
-      setShowEditForm(false);
-      if (onEdit) onEdit(incident.id, { descripcion: editDescripcion, estado: editEstado });
-    } catch (err) {
-      toast.error("No se pudo actualizar la incidencia");
-      console.error(err);
+ const handleGuardarEdicion = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Token no encontrado. Inicia sesión nuevamente.");
+      return;
     }
-  };
 
-  const handleEliminar = async () => {
-    try {
-      await axios.delete(`http://localhost:5100/api/incidents/${incident.id}`, {
+    await axios.put(
+      `http://localhost:5100/api/incidents/${incident.id}`,
+      {
+        descripcion: editDescripcion,
+        estado: editEstado,
+      },
+      {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success("Incidencia eliminada");
-      setShowDeleteConfirm(false);
-      if (onDelete) onDelete(incident.id);
-    } catch (err) {
-      toast.error("No se pudo eliminar la incidencia");
-      console.error(err);
+      }
+    );
+
+    toast.success("Incidencia actualizada correctamente");
+    setShowEditForm(false);
+    if (onEdit) onEdit(incident.id, { descripcion: editDescripcion, estado: editEstado });
+  } catch (err) {
+    console.error("Error al actualizar incidencia:", err.response?.data || err.message);
+    toast.error(err.response?.data?.msg || "No se pudo actualizar la incidencia");
+  }
+};
+
+const handleEliminar = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Token no encontrado. Inicia sesión nuevamente.");
+      return;
     }
-  };
+
+    await axios.delete(`http://localhost:5100/api/incidents/${incident.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    toast.success("Incidencia eliminada correctamente");
+    setShowDeleteConfirm(false);
+    if (onDelete) onDelete(incident.id);
+  } catch (err) {
+    console.error("Error al eliminar incidencia:", err.response?.data || err.message);
+    toast.error(err.response?.data?.msg || "No se pudo eliminar la incidencia");
+  }
+};
+
 
   return (
-    <div className="relative rounded-2xl border border-gray-200 p-5 shadow-sm bg-white hover:shadow-md transition-all">
-      {/* === MENÚ DE ADMIN (⋮) === */}
-      {usuarioRol === "admin" && (
-        <div className="absolute top-3 right-3">
-          <button
-            onClick={() => setShowAdminMenu(!showAdminMenu)}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            <FaEllipsisV />
-          </button>
+    <>
+      {/* === CARD PRINCIPAL === */}
+      <div
+        className={`relative rounded-2xl p-5 border-2 transition-shadow duration-300
+        ${
+          incident.status === "pendiente"
+            ? "border-red-400 bg-white hover:shadow-md"
+            : incident.status === "en_revision"
+            ? "border-yellow-400 bg-white hover:shadow-md"
+            : incident.status === "resuelta"
+            ? "border-green-300 bg-gray-100 opacity-70"
+            : "border-gray-200 bg-white"
+        }`}
+      >
+        {/* === MENÚ ADMIN === */}
+        {usuarioRol === "admin" && (
+          <div className="absolute top-3 right-3">
+            <button
+              onClick={() => setShowAdminMenu(!showAdminMenu)}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <FaEllipsisV />
+            </button>
 
-          {showAdminMenu && (
-            <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-20">
-              <button
-                onClick={() => setShowEditForm(true)}
-                className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-t-xl w-full text-left"
-              >
-                <FaEdit /> Editar
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-b-xl w-full text-left"
-              >
-                <FaTrash /> Eliminar
-              </button>
-            </div>
-          )}
+            {showAdminMenu && (
+              <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-20">
+                <button
+                  onClick={() => {
+                    setShowEditForm(true);
+                    setShowAdminMenu(false);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-t-xl w-full text-left"
+                >
+                  <FaEdit /> Editar
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(true);
+                    setShowAdminMenu(false);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-b-xl w-full text-left"
+                >
+                  <FaTrash /> Eliminar
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* === ETIQUETA DE ESTADO === */}
+        <div className="absolute top-3 left-3">
+          <IncidentStatusBadge status={incident.status} />
         </div>
-      )}
 
-      {/* === ETIQUETA DE ESTADO === */}
-      <div className="absolute top-3 left-3">
-        <IncidentStatusBadge status={incident.status} />
+        {/* === INFORMACIÓN === */}
+        <h3 className="text-lg font-semibold text-gray-800 mt-8 mb-2">
+          {incident.title}
+        </h3>
+
+        <p className="text-sm text-gray-600 mb-1">
+          <strong>Lote:</strong> {incident.lot}
+        </p>
+        <p className="text-sm text-gray-600 mb-1">
+          <strong>Reportado:</strong> {incident.date}
+        </p>
+        <p className="text-sm text-gray-600 mb-4">
+          <strong>Reportado por:</strong> {incident.reportedBy}
+        </p>
+
+        {/* === CAMBIAR ESTADO (Supervisor) === */}
+        {usuarioRol === "supervisor" && incident.status !== "resuelta" && (
+          <div className="relative">
+            <button
+              onClick={() => setShowOptions(!showOptions)}
+              className="flex items-center justify-center gap-2 text-white px-4 py-2 rounded-xl w-full font-medium transition-all shadow-sm hover:scale-105"
+              style={{ backgroundColor: "#22c55e" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#16a34a")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#22c55e")}
+            >
+              <FaWrench className="text-white" />
+              Resolver incidencia
+            </button>
+
+            {showOptions && (
+              <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
+                <button
+                  onClick={() => handleEstado("en_revision")}
+                  className="block w-full text-left px-4 py-2 text-yellow-600 hover:bg-yellow-50 rounded-t-xl"
+                >
+                  En Revisión
+                </button>
+                <button
+                  onClick={() => handleEstado("resuelta")}
+                  className="block w-full text-left px-4 py-2 text-green-600 hover:bg-green-50 rounded-b-xl"
+                >
+                  Resuelta
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-
-      {/* === INFORMACIÓN === */}
-      <h3 className="text-lg font-semibold text-gray-800 mt-8 mb-2">
-        {incident.title}
-      </h3>
-
-      <p className="text-sm text-gray-600 mb-1">
-        <strong>Lote:</strong> {incident.lot}
-      </p>
-      <p className="text-sm text-gray-600 mb-1">
-        <strong>Reportado:</strong> {incident.date}
-      </p>
-      <p className="text-sm text-gray-600 mb-4">
-        <strong>Reportado por:</strong> {incident.reportedBy}
-      </p>
-
-      {/* === CAMBIAR ESTADO (solo supervisor) === */}
-     {usuarioRol === "supervisor" && incident.status !== "resuelta" && (
-  <div className="relative">
-    <button
-      onClick={() => setShowOptions(!showOptions)}
-      className="flex items-center justify-center gap-2 text-white px-4 py-2 rounded-xl w-full font-medium transition-all shadow-sm hover:scale-105"
-      style={{
-        backgroundColor: "#22c55e",
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#16a34a")}
-      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#22c55e")}
-    >
-      <FaWrench className="text-white" />
-      Resolver incidencia
-    </button>
-
-          {showOptions && (
-            <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
-              <button
-                onClick={() => handleEstado("en_revision")}
-                className="block w-full text-left px-4 py-2 text-yellow-600 hover:bg-yellow-50 rounded-t-xl"
-              >
-                En Revisión
-              </button>
-              <button
-                onClick={() => handleEstado("resuelta")}
-                className="block w-full text-left px-4 py-2 text-green-600 hover:bg-green-50 rounded-b-xl"
-              >
-                Resuelta
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* === FORMULARIO DE EDICIÓN === */}
       {showEditForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-30">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md relative">
             <button
               onClick={() => setShowEditForm(false)}
@@ -217,7 +255,7 @@ export default function IncidentCard({ incident, onStatusChange, onEdit, onDelet
 
       {/* === CONFIRMACIÓN DE ELIMINACIÓN === */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-40">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-center">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
               ¿Eliminar esta incidencia?
@@ -242,6 +280,6 @@ export default function IncidentCard({ incident, onStatusChange, onEdit, onDelet
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
