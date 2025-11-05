@@ -1,58 +1,83 @@
 // src/pages/Dashboard/Users.jsx
 import React, { useEffect, useState } from "react";
 import UsersList from "../../components/users/UsersList";
+import UserFormModal from "../../components/users/UserFormModal";
 import { PlusCircle, Search } from "lucide-react";
-import axios from "axios";
+import {
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  updateUserRole,
+} from "../../services/userService";
 
 const Users = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [rolFiltro, setRolFiltro] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [userToEdit, setUserToEdit] = useState(null);
 
-  useEffect(() => {
-    const fetchUsuarios = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5100/api/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUsuarios(res.data);
-      } catch (error) {
-        console.error("❌ Error al obtener usuarios:", error);
-      }
-    };
-    fetchUsuarios();
-  }, []);
-
-  const eliminarUsuario = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
+  const cargarUsuarios = async () => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5100/api/users/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUsuarios((prev) => prev.filter((u) => u._id !== id));
+      const data = await getAllUsers();
+      setUsuarios(data);
     } catch (error) {
-      console.error("Error al eliminar usuario:", error);
+      console.error("❌ Error al obtener usuarios:", error);
     }
   };
 
-  const cambiarRol = async (id, nuevoRol) => {
+  useEffect(() => {
+    cargarUsuarios();
+  }, []);
+
+  // ✅ Crear o editar
+  const handleSaveUser = async (formData) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:5100/api/users/${id}`,
-        { rol: nuevoRol },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (userToEdit) {
+        await updateUser(userToEdit._id, formData);
+      } else {
+        await createUser(formData);
+      }
+      await cargarUsuarios();
+      setShowModal(false);
+      setUserToEdit(null);
+    } catch (error) {
+      console.error("❌ Error al guardar usuario:", error);
+      alert("Error al guardar usuario");
+    }
+  };
+
+  const handleEdit = (usuario) => {
+    setUserToEdit(usuario);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
+    try {
+      await deleteUser(id);
+      setUsuarios((prev) => prev.filter((u) => u._id !== id));
+    } catch (error) {
+      console.error("❌ Error al eliminar:", error);
+      alert("Error al eliminar usuario");
+    }
+  };
+
+  // ✅ Cambiar Rol
+  const handleChangeRol = async (id, nuevoRol) => {
+    try {
+      await updateUserRole(id, nuevoRol);
       setUsuarios((prev) =>
         prev.map((u) => (u._id === id ? { ...u, rol: nuevoRol } : u))
       );
     } catch (error) {
-      console.error("Error al cambiar rol:", error);
+      console.error("❌ Error al cambiar rol:", error);
+      alert("Error al cambiar el rol");
     }
   };
 
+  // 🔍 Filtrado
   const usuariosFiltrados = usuarios.filter((u) => {
     const coincideBusqueda =
       u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -82,23 +107,37 @@ const Users = () => {
             className="border border-gray-300 rounded-xl px-3 py-2 shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
           >
             <option value="">Todos los roles</option>
-            <option value="Administrador">Administrador</option>
-            <option value="Supervisor">Supervisor</option>
-            <option value="Técnico">Técnico</option>
-            <option value="Operador">Operador</option>
+            <option value="administrador">Administrador</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="tecnico">Técnico</option>
           </select>
         </div>
 
-        <button className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow-md hover:bg-green-700 transition">
+        <button
+          onClick={() => {
+            setUserToEdit(null);
+            setShowModal(true);
+          }}
+          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow-md hover:bg-green-700 transition"
+        >
           <PlusCircle size={20} /> Agregar Usuario
         </button>
       </div>
 
       <UsersList
         usuarios={usuariosFiltrados}
-        onDelete={eliminarUsuario}
-        onChangeRol={cambiarRol}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onChangeRol={handleChangeRol}
       />
+
+      {showModal && (
+        <UserFormModal
+          userToEdit={userToEdit}
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveUser}
+        />
+      )}
     </div>
   );
 };
