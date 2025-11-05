@@ -1,89 +1,89 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { FiPlus } from "react-icons/fi";
 import { HiOutlineBellAlert } from "react-icons/hi2";
+import { FaUserCircle } from "react-icons/fa";
 import "../../styles/dashboard.css";
 
 export default function Topbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [titulo, setTitulo] = useState("");
   const [subtitulo, setSubtitulo] = useState("");
-  const [boton, setBoton] = useState("");
 
-  // 📍 Mapa de rutas → títulos, subtítulos y botones
+  // 📍 Mapa de rutas → títulos y subtítulos
   const mapRutas = {
     "/dashboard": {
       titulo: "Panel Principal",
       subtitulo: "Resumen general de operaciones agrícolas",
-      boton: "Crear usuario",
     },
     "/dashboard/lotes": {
       titulo: "Gestión de Lotes",
       subtitulo: "Control y supervisión de los lotes activos",
-      boton: "Crear lote",
     },
     "/dashboard/tareas": {
       titulo: "Gestión de Tareas",
       subtitulo: "Asigna y gestiona tareas del personal técnico",
-      boton: "Crear tarea",
     },
     "/dashboard/usuarios": {
       titulo: "Gestión de Usuarios",
       subtitulo: "Administra cuentas y roles del sistema",
-      boton: "Crear usuario",
     },
     "/dashboard/incidencias": {
       titulo: "Gestión de Incidencias",
       subtitulo: "Monitoreo y seguimiento de reportes",
-      boton: "Nueva incidencia",
     },
     "/dashboard/chat": {
       titulo: "Chat de Lotes",
       subtitulo: "Comunicación directa con el personal de campo",
-      boton: "",
     },
     "/dashboard/configuracion": {
       titulo: "Configuración del Sistema",
       subtitulo: "Ajusta las preferencias del usuario",
-      boton: "",
     },
   };
 
-  // 📍 Actualiza dinámicamente cuando cambia la ruta
   useEffect(() => {
-    console.log("🔄 RUTA ACTUAL:", location.pathname);
     const ruta = mapRutas[location.pathname];
     if (ruta) {
       setTitulo(ruta.titulo);
       setSubtitulo(ruta.subtitulo);
-      setBoton(ruta.boton);
     } else {
       setTitulo("Panel");
       setSubtitulo("Bienvenido al sistema");
-      setBoton("");
     }
   }, [location.pathname]);
 
   return (
-    <header className="topbar">
-      <div className="topbar-left">
-        <h1 className="topbar-title">{titulo}</h1>
-        <p className="topbar-subtitle">{subtitulo}</p>
+    <header
+      className="topbar flex justify-between items-center px-6 py-3 shadow-md"
+      style={{ backgroundColor: "#4ade80" }} // 💚 Verde sólido
+    >
+      {/* 🧭 Título y subtítulo */}
+      <div>
+        <h1 className="text-lg font-semibold" style={{ color: "#064e3b" }}>
+          {titulo}
+        </h1>
+        <p className="text-sm opacity-90" style={{ color: "#064e3b" }}>
+          {subtitulo}
+        </p>
       </div>
 
-      <div className="topbar-right">
-        {/* 🔔 Botón de notificaciones */}
-        <button className="btn-notificacion">
-          <HiOutlineBellAlert className="icono-notificacion" />
+      {/* 🔔 Notificaciones y perfil */}
+      <div className="flex items-center gap-6">
+        <button
+          className="text-white hover:opacity-80 transition"
+          title="Notificaciones"
+        >
+          <HiOutlineBellAlert size={28} />
         </button>
 
-        {/* ➕ Botón de acción */}
-        {boton && (
-          <button className="btn-asignar-tarea bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 transition">
-            <FiPlus className="text-white" />
-            {boton}
-          </button>
-        )}
+        <button
+          onClick={() => navigate("/dashboard/perfil")}
+          className="text-white hover:opacity-80 transition"
+          title="Ver perfil"
+        >
+          <FaUserCircle size={32} />
+        </button>
       </div>
     </header>
   );
