@@ -9,7 +9,8 @@ import Overview from "./pages/Dashboard/Overview";
 import Usuarios from "./pages/Dashboard/Users";
 import Tareas from "./pages/Dashboard/Tasks";
 import Lotes from "./pages/Dashboard/Lots";
-import ChatPanel from "./components/messages/ChatPanel";
+import ChatPage from "./pages/Dashboard/chat"; 
+// import ChatPanel from "./components/messages/ChatPanel";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Incidencias from "./pages/Dashboard/Incidents"; // 👈 nombre cambiado a Incidencias
 
@@ -37,7 +38,7 @@ export default function App() {
             <Route path="lotes" element={<Lotes />} />
             <Route path="tareas" element={<Tareas />} />
             <Route path="usuarios" element={<Usuarios />} />
-            <Route path="chat" element={<ChatPanel />} />
+            <Route path="chat" element={<ChatPage />} />
             {/* 👇 Ruta ajustada para coincidir con el Sidebar */}
             <Route path="incidencias" element={<Incidencias />} />
           </Route>

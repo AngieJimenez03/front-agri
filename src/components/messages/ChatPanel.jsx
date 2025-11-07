@@ -1,137 +1,84 @@
-import { useEffect, useRef, useState } from "react";
-import { useSocket } from "../../context/SocketContext";
-import { useLote } from "../../context/LoteContext";
-import { Send } from "lucide-react";
+//src/components/messages/ChatPanel
+import { useState } from "react";
+import { Search, Leaf } from "lucide-react";
 
-export default function ChatPanel({ open, onClose }) {
-  const socket = useSocket();
-  const { loteActual } = useLote();
-  const [mensajes, setMensajes] = useState([]);
-  const [texto, setTexto] = useState("");
-  const scrollRef = useRef();
+export default function ChatPanel({ onSelectLote, selectedLote }) {
+  const [search, setSearch] = useState("");
 
-  const usuario = JSON.parse(localStorage.getItem("user") || "{}");
-  const usuarioActual = usuario?.nombre || "Usuario";
+  const conversaciones = [
+    {
+      _id: "lote1",
+      nombre: "Lote Norte A",
+      cultivo: "Maíz",
+      ultimoMensaje: "Riego completado exitosamente",
+      hora: "09:45",
+    },
+    {
+      _id: "lote2",
+      nombre: "Lote Sur B",
+      cultivo: "Trigo",
+      ultimoMensaje: "Necesitamos revisar las válvulas",
+      hora: "08:30",
+    },
+    {
+      _id: "lote3",
+      nombre: "Lote Experimental C",
+      cultivo: "Soya",
+      ultimoMensaje: "Preparando terreno para siembra",
+      hora: "Ayer",
+    },
+  ];
 
-  // Unirse al lote
-  useEffect(() => {
-    if (socket && loteActual?._id) {
-      setMensajes([]);
-      socket.emit("unirse_lote", loteActual._id);
-      console.log(` unido al lote ${loteActual._id}`);
-    }
-  }, [socket, loteActual]);
-
-  // Escuchar mensajes nuevos
-  useEffect(() => {
-    if (!socket) return;
-    const recibirMensaje = (msg) => {
-      if (msg.loteId === loteActual?._id) {
-        setMensajes((prev) => [...prev, msg]);
-      }
-    };
-    socket.on("mensaje_lote", recibirMensaje);
-    return () => socket.off("mensaje_lote", recibirMensaje);
-  }, [socket, loteActual]);
-
-  // Scroll automático
-  useEffect(() => {
-    if (scrollRef.current)
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [mensajes]);
-
-  // Enviar mensaje
-  const enviarMensaje = (e) => {
-    e.preventDefault();
-    if (!texto.trim() || !loteActual || !socket) return;
-
-    const msg = {
-      loteId: loteActual._id,
-      texto: texto.trim(),
-      emisor: usuarioActual,
-      fecha: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    socket.emit("mensaje_lote", msg);
-    setMensajes((prev) => [...prev, msg]); // mostrar sin duplicar
-    setTexto("");
-  };
-
-  if (!open || !loteActual) return null;
+  const filtrados = conversaciones.filter((c) =>
+    c.nombre.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="fixed bottom-4 right-4 w-[420px] h-[520px] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col overflow-hidden z-50">
+    <aside className="w-1/3 bg-gray-50 border-r border-gray-200 flex flex-col">
       {/* Header */}
-      <div className="p-3 bg-green-600 text-white flex justify-between items-center">
-        <div>
-          <h2 className="text-sm font-semibold">{loteActual.nombre}</h2>
-          <p className="text-[11px] text-green-100">
-            {loteActual.ubicacion || "Chat del lote"}
-          </p>
+      <div className="p-4 border-b border-gray-100">
+        <h2 className="text-lg font-semibold text-emerald-800">
+          Conversaciones
+        </h2>
+        <div className="relative mt-3">
+          <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Buscar lote..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
         </div>
-        <button onClick={onClose} className="text-white hover:text-gray-200">
-          ✕
-        </button>
       </div>
 
-      {/* Mensajes */}
-      <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-3">
-        {mensajes.length === 0 ? (
-          <p className="text-center text-gray-400 mt-10 text-sm">
-            No hay mensajes aún
-          </p>
-        ) : (
-          mensajes.map((m, i) => {
-            const propio = m.emisor === usuarioActual;
-            return (
-              <div key={i} className={`flex ${propio ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm ${
-                    propio
-                      ? "bg-green-600 text-white rounded-tr-none"
-                      : "bg-white border border-gray-200 text-gray-800 rounded-tl-none"
-                  }`}
-                >
-                  <div className="text-xs font-semibold mb-1 opacity-80">
-                    {propio ? "Tú" : m.emisor}
-                  </div>
-                  <div>{m.texto}</div>
-                  <div
-                    className={`text-[10px] mt-1 ${
-                      propio ? "text-gray-200" : "text-gray-500"
-                    }`}
-                  >
-                    {m.fecha}
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
+      {/* Lista de conversaciones */}
+      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        {filtrados.map((conv) => (
+          <div
+            key={conv._id}
+            onClick={() => onSelectLote(conv._id)}
+            className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition ${
+              selectedLote === conv._id
+                ? "bg-emerald-50 border border-emerald-100"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+              <Leaf className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-gray-800 truncate">
+                {conv.nombre}
+              </p>
+              <p className="text-sm text-gray-500 truncate">
+                {conv.ultimoMensaje}
+              </p>
+            </div>
+            <span className="text-xs text-gray-400">{conv.hora}</span>
+          </div>
+        ))}
       </div>
-
-      {/* Input */}
-      <form
-        onSubmit={enviarMensaje}
-        className="p-3 bg-gray-100 border-t border-gray-200 flex gap-2 items-center"
-      >
-        <input
-          type="text"
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-          placeholder="Escribe un mensaje..."
-          className="flex-1 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-        <button
-          type="submit"
-          className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition"
-        >
-          <Send size={18} />
-        </button>
-      </form>
-    </div>
+    </aside>
   );
 }

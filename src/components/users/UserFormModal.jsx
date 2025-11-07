@@ -38,7 +38,7 @@ export default function UserFormModal({ userToEdit, onClose, onSave }) {
           <input
             type="text"
             name="nombre"
-            placeholder="Nombre"
+            placeholder="Nombre completo"
             value={form.nombre}
             onChange={handleChange}
             className="w-full border rounded-md p-2"

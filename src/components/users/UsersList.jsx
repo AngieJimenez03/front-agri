@@ -2,22 +2,19 @@
 import React from "react";
 import UserCard from "./UsersCard";
 
-const UsersList = ({ usuarios, onDelete, onChangeRol }) => {
-  if (!usuarios || usuarios.length === 0)
-    return (
-      <div className="text-center text-gray-500 mt-10 text-lg font-medium">
-        No hay usuarios disponibles
-      </div>
-    );
+const UsersList = ({ usuarios, onDelete, onChangeRol, onEdit }) => {
+  if (!usuarios?.length)
+    return <p className="text-gray-500 text-center">No hay usuarios registrados.</p>;
 
   return (
-    <div className="flex flex-col gap-3">
-      {usuarios.map((usuario) => (
+    <div className="space-y-3">
+      {usuarios.map((u) => (
         <UserCard
-          key={usuario._id}
-          usuario={usuario}
-          onDelete={onDelete}
+          key={u._id}
+          usuario={u}
+          onDelete={() => onDelete(u)}
           onChangeRol={onChangeRol}
+          onEdit={() => onEdit(u)}
         />
       ))}
     </div>

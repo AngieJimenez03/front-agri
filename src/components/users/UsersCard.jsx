@@ -2,7 +2,7 @@
 import React from "react";
 import { Pencil, Trash2, Mail, Phone, UserCog } from "lucide-react";
 
-const UserCard = ({ usuario, onEdit, onDelete, onChangeRol }) => {
+const UserCard = ({ usuario, onDelete, onChangeRol, onEdit }) => {
   if (!usuario) return null;
 
   const iniciales = usuario.nombre
@@ -23,48 +23,45 @@ const UserCard = ({ usuario, onEdit, onDelete, onChangeRol }) => {
 
         <div>
           <h3 className="font-semibold text-gray-800 text-base">{usuario.nombre}</h3>
-
           <div className="flex items-center flex-wrap gap-x-5 text-sm text-gray-500 mt-1">
             <div className="flex items-center gap-1.5">
               <Mail size={14} strokeWidth={1.5} className="text-gray-400" />
               <span>{usuario.email}</span>
             </div>
-
             <div className="flex items-center gap-1.5">
               <Phone size={14} strokeWidth={1.5} className="text-gray-400" />
               <span>{usuario.telefono}</span>
             </div>
-
             <div className="flex items-center gap-1.5">
               <UserCog size={14} strokeWidth={1.5} className="text-gray-400" />
-              <span className="text-gray-700 capitalize">{usuario.rol}</span>
+              <span className="text-gray-700">{usuario.rol}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ⚙️ Acciones */}
+      {/* ⚙️ Derecha: acciones */}
       <div className="flex items-center gap-5">
         <select
           value={usuario.rol}
           onChange={(e) => onChangeRol(usuario._id, e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
         >
-          <option value="administrador">Administrador</option>
-          <option value="supervisor">Supervisor</option>
-          <option value="tecnico">Técnico</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Técnico">Técnico</option>
         </select>
 
         <div className="flex gap-2">
           <button
-            onClick={() => onEdit(usuario)}
+            onClick={onEdit}
             className="p-1.5 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-gray-100 transition"
             title="Editar"
           >
             <Pencil size={18} strokeWidth={1.5} />
           </button>
           <button
-            onClick={() => onDelete(usuario._id)}
+            onClick={onDelete}
             className="p-1.5 text-gray-500 hover:text-red-600 rounded-lg hover:bg-gray-100 transition"
             title="Eliminar"
           >
