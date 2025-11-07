@@ -2,20 +2,19 @@ import { useState } from "react";
 import { Paperclip, Smile, Send } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 
-export default function ChatInput() {
+export default function ChatInput({ onSend }) {
   const [mensaje, setMensaje] = useState("");
   const [mostrarEmojis, setMostrarEmojis] = useState(false);
   const [imagen, setImagen] = useState(null);
 
   const handleSend = () => {
-    if (!mensaje && !imagen) return;
-    console.log("Mensaje enviado:", mensaje, imagen);
+    onSend(mensaje, imagen);
     setMensaje("");
     setImagen(null);
   };
 
   return (
-    <div className="p-3 border-t border-gray-200 bg-white relative">
+    <div className="p-3 bg-white relative">
       {mostrarEmojis && (
         <div className="absolute bottom-14 left-4 z-10">
           <EmojiPicker onEmojiClick={(e) => setMensaje(mensaje + e.emoji)} />

@@ -1,42 +1,32 @@
 //src/components/messages/ChatPanel
-import { useState } from "react";
+// src/components/messages/ChatPanel.jsx
+import { useEffect, useState } from "react";
 import { Search, Leaf } from "lucide-react";
+import api from "../../services/api";
 
 export default function ChatPanel({ onSelectLote, selectedLote }) {
   const [search, setSearch] = useState("");
+  const [lotes, setLotes] = useState([]);
 
-  const conversaciones = [
-    {
-      _id: "lote1",
-      nombre: "Lote Norte A",
-      cultivo: "Maíz",
-      ultimoMensaje: "Riego completado exitosamente",
-      hora: "09:45",
-    },
-    {
-      _id: "lote2",
-      nombre: "Lote Sur B",
-      cultivo: "Trigo",
-      ultimoMensaje: "Necesitamos revisar las válvulas",
-      hora: "08:30",
-    },
-    {
-      _id: "lote3",
-      nombre: "Lote Experimental C",
-      cultivo: "Soya",
-      ultimoMensaje: "Preparando terreno para siembra",
-      hora: "Ayer",
-    },
-  ];
+  useEffect(() => {
+    const fetchLotes = async () => {
+      try {
+        const res = await api.get("/lots");
+        setLotes(res.data);
+      } catch (error) {
+        console.error("Error cargando lotes:", error);
+      }
+    };
+    fetchLotes();
+  }, []);
 
-  const filtrados = conversaciones.filter((c) =>
-    c.nombre.toLowerCase().includes(search.toLowerCase())
+  const filtrados = lotes.filter((l) =>
+    l.nombre?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <aside className="w-1/3 bg-gray-50 border-r border-gray-200 flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-100">
+    <aside className="min-w-[280px] max-w-[360px] w-1/3 bg-gray-50 border-r border-gray-200 flex flex-col resize-x overflow-hidden">
+      <div className="p-4 border-b border-gray-100 flex-shrink-0">
         <h2 className="text-lg font-semibold text-emerald-800">
           Conversaciones
         </h2>
@@ -52,14 +42,13 @@ export default function ChatPanel({ onSelectLote, selectedLote }) {
         </div>
       </div>
 
-      {/* Lista de conversaciones */}
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {filtrados.map((conv) => (
+        {filtrados.map((lote) => (
           <div
-            key={conv._id}
-            onClick={() => onSelectLote(conv._id)}
+            key={lote._id}
+            onClick={() => onSelectLote(lote)}
             className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition ${
-              selectedLote === conv._id
+              selectedLote === lote._id
                 ? "bg-emerald-50 border border-emerald-100"
                 : "hover:bg-gray-100"
             }`}
@@ -68,14 +57,11 @@ export default function ChatPanel({ onSelectLote, selectedLote }) {
               <Leaf className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-800 truncate">
-                {conv.nombre}
-              </p>
+              <p className="font-medium text-gray-800 truncate">{lote.nombre}</p>
               <p className="text-sm text-gray-500 truncate">
-                {conv.ultimoMensaje}
+                {lote.cultivo || "Cultivo desconocido"}
               </p>
             </div>
-            <span className="text-xs text-gray-400">{conv.hora}</span>
           </div>
         ))}
       </div>

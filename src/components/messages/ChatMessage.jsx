@@ -24,11 +24,16 @@ export default function ChatMessage({ mensaje }) {
             : "bg-white border border-gray-200 text-gray-800 rounded-bl-none"
         }`}
       >
-        {/* Nombre solo si no soy yo */}
+        {/* Nombre y rol solo si no soy yo */}
         {!esYo && (
-          <p className="text-sm font-semibold text-emerald-700 mb-1">
-            {mensaje.usuario}
-          </p>
+          <div className="mb-1">
+            <p className="text-sm font-semibold text-emerald-700 leading-tight">
+              {mensaje.usuario}
+            </p>
+            {mensaje.rol && (
+              <p className="text-xs text-gray-500 -mt-0.5">{mensaje.rol}</p>
+            )}
+          </div>
         )}
 
         {/* Contenido del mensaje */}

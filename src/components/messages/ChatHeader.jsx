@@ -1,25 +1,19 @@
 // src/components/messages/ChatHeader.jsx
-import { Users, Leaf } from "lucide-react";
+export default function ChatHeader({ loteId }) {
+  const lotesInfo = {
+    lote1: { nombre: "Lote Norte A", cultivo: "Maíz", miembros: 4 },
+    lote2: { nombre: "Lote Sur B", cultivo: "Trigo", miembros: 3 },
+    lote3: { nombre: "Lote Este C", cultivo: "Soya", miembros: 2 },
+  };
 
-export default function ChatHeader({ loteId, onToggleMiembros }) {
+  const lote = lotesInfo[loteId] || lotesInfo.lote1;
+
   return (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-emerald-100 flex items-center justify-center rounded-full">
-          <Leaf className="text-emerald-700 w-5 h-5" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-gray-800">Lote {loteId.toUpperCase()}</h3>
-          <p className="text-sm text-gray-500">4 miembros activos</p>
-        </div>
+    <div className="border-b p-4 bg-white flex justify-between items-center">
+      <div>
+        <h2 className="font-semibold">{lote.nombre}</h2>
+        <p className="text-sm text-gray-500">{lote.cultivo} • {lote.miembros} participantes activos</p>
       </div>
-      <button
-        onClick={onToggleMiembros}
-        className="p-2 hover:bg-gray-100 rounded-lg transition"
-        title="Ver miembros"
-      >
-        <Users className="text-gray-600 w-5 h-5" />
-      </button>
-    </header>
+    </div>
   );
 }

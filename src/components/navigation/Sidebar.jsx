@@ -161,15 +161,30 @@ export default function Sidebar() {
         </div>
 
         {menuAbierto && (
-          <div className="user-menu">
-            <button
-              onClick={handleLogout}
-              style={{ color: "red", fontWeight: "500" }}
-            >
-              <FaSignOutAlt style={{ marginRight: "8px" }} /> Cerrar Sesión
-            </button>
-          </div>
-        )}
+  <div className="user-menu">
+    <button
+      onClick={() => {
+        // 🔹 Cerrar sesión correctamente
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario"); // antes podía quedar el user anterior
+        window.location.href = "/login"; // redirigir al login
+
+        // 🔹 Si usas socket context, desconecta el socket
+        const socket = window.socketInstance;
+        if (socket) socket.disconnect();
+      }}
+      style={{
+        color: "red",
+        fontWeight: "500",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <FaSignOutAlt style={{ marginRight: "8px" }} /> Cerrar Sesión
+    </button>
+  </div>
+)}
+
       </div>
     </aside>
   );
