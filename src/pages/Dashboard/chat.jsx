@@ -1,4 +1,5 @@
 //src/pages/Dashboard/chat.jsx
+// src/pages/Dashboard/chat.jsx
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useSocket } from "../../context/SocketContext";
@@ -17,7 +18,7 @@ export default function ChatPage() {
   const [panelWidth, setPanelWidth] = useState(280);
   const isResizing = useRef(false);
 
-  // 🔹 Cargar lotes
+  // 🔹 Cargar lotes disponibles
   useEffect(() => {
     const fetchLotes = async () => {
       try {
@@ -32,7 +33,7 @@ export default function ChatPage() {
     fetchLotes();
   }, [token]);
 
-  // 🔹 Cargar mensajes del lote actual
+  // 🔹 Cargar historial solo una vez por HTTP al abrir un lote
   useEffect(() => {
     if (!loteActual?._id) {
       setMensajes([]);
@@ -56,19 +57,28 @@ export default function ChatPage() {
     fetchMensajes();
   }, [loteActual, token]);
 
-  // 🔹 Escuchar mensajes por socket
+  // 🔹 Recargar historial al reconectarse el socket
   useEffect(() => {
     if (!socket || !loteActual?._id) return;
 
-    const handleNuevoMensaje = (mensaje) => {
-      if (mensaje.loteId === loteActual._id) {
-        setMensajes((prev) => [...prev, mensaje]);
-      }
+    const handleReconnect = () => {
+      axios
+        .get(`http://localhost:5100/api/messages/${loteActual._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setMensajes(res.data || []);
+        })
+        .catch((err) => {
+          console.error("Error al recargar historial:", err);
+        });
     };
 
-    socket.on("nuevoMensaje", handleNuevoMensaje);
-    return () => socket.off("nuevoMensaje", handleNuevoMensaje);
-  }, [socket, loteActual]);
+    socket.on("connect", handleReconnect);
+    return () => {
+      socket.off("connect", handleReconnect);
+    };
+  }, [socket, loteActual?._id, token]);
 
   // 🔹 Redimensionamiento panel izquierdo
   const startResizing = () => (isResizing.current = true);
@@ -90,9 +100,8 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] bg-gray-50">
-      {/* 🔹 Contenedor principal debajo del Topbar */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Panel izquierdo: lista de lotes */}
+        {/* Panel izquierdo */}
         <aside
           className="border-r border-gray-200 bg-white overflow-y-auto"
           style={{ width: `${panelWidth}px` }}
@@ -133,11 +142,10 @@ export default function ChatPage() {
           className="w-1 cursor-col-resize bg-gray-200 hover:bg-gray-300 transition"
         />
 
-        {/* Panel derecho: chat */}
+        {/* Panel derecho: Chat */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {loteActual ? (
             <>
-              {/* 🔹 Header del chat (nombre del lote visible) */}
               <div className="bg-white border-b px-6 py-3 shadow-sm flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-semibold text-emerald-700">
@@ -151,28 +159,8 @@ export default function ChatPage() {
                 </div>
               </div>
 
-              {/* 🔹 Componente del chat */}
               <div className="flex-1 overflow-hidden">
-                <ChatLote
-                  lote={loteActual}
-                  mensajes={mensajes}
-                  usuarioActual={user?.nombre || user?.email}
-                  socket={socket}
-                  onSend={(texto, imagen) => {
-                    if (!texto.trim() && !imagen) return;
-
-                    const nuevoMensaje = {
-                      texto,
-                      imagen,
-                      emisor: user?._id,
-                      nombreEmisor: user?.nombre || "Usuario",
-                      loteId: loteActual._id,
-                    };
-
-                    socket.emit("enviarMensaje", nuevoMensaje);
-                    setMensajes((prev) => [...prev, nuevoMensaje]);
-                  }}
-                />
+                <ChatLote lote={loteActual} mensajesIniciales={mensajes} />
               </div>
             </>
           ) : (

@@ -1,5 +1,4 @@
 //src/components/messages/ChatPanel
-// src/components/messages/ChatPanel.jsx
 import { useEffect, useState } from "react";
 import { Search, Leaf } from "lucide-react";
 import api from "../../services/api";

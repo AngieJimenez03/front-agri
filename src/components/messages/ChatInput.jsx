@@ -8,9 +8,11 @@ export default function ChatInput({ onSend }) {
   const [imagen, setImagen] = useState(null);
 
   const handleSend = () => {
-    onSend(mensaje, imagen);
+    if (!mensaje.trim() && !imagen) return;
+    onSend(mensaje.trim(), imagen);
     setMensaje("");
     setImagen(null);
+    setMostrarEmojis(false);
   };
 
   return (
@@ -43,6 +45,12 @@ export default function ChatInput({ onSend }) {
           type="text"
           value={mensaje}
           onChange={(e) => setMensaje(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
           placeholder="Escribe un mensaje..."
           className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
@@ -63,3 +71,4 @@ export default function ChatInput({ onSend }) {
     </div>
   );
 }
+

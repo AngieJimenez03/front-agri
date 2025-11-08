@@ -1,133 +1,109 @@
 // src/components/messages/ChatLot.jsx
 import { useEffect, useState, useRef } from "react";
-import ChatHeader from "./ChatHeader";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import ChatMembers from "./ChatMembers";
 import { useSocket } from "../../context/SocketContext";
 
-export default function ChatLote({ lote, mensajesIniciales }) {
-  const [mensajes, setMensajes] = useState(mensajesIniciales || []);
-  const [mostrarMiembros, setMostrarMiembros] = useState(false);
+export default function ChatLote({ lote, mensajesIniciales = [] }) {
   const socket = useSocket();
   const user = JSON.parse(localStorage.getItem("user"));
+  const [mensajes, setMensajes] = useState(mensajesIniciales);
   const scrollRef = useRef(null);
 
-  // actualizar mensajesIniciales si cambian desde padre (fallback HTTP)
+  // 🔹 Auto scroll al final
   useEffect(() => {
-    setMensajes(mensajesIniciales || []);
-  }, [mensajesIniciales]);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [mensajes]);
 
-  // Cuando cambia el lote, unir a la sala y manejar historial + nuevos mensajes
+  // 🔹 Unirse al canal del lote y escuchar eventos en tiempo real
   useEffect(() => {
-    if (!lote || !socket) return;
+    if (!socket || !lote?._id) return;
 
-    // Unirse a sala del lote
-    socket.emit("unirse_lote", lote._id);
-
-    // Recibir historial
-    const onHistorial = (historial) => {
-      setMensajes(historial || []);
-      // desplazarse al fondo al cargar
-      setTimeout(() => {
-        scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+    const joinLote = () => {
+      socket.emit("unirse_lote", lote._id);
     };
 
-    // Recibir mensajes nuevos
-    const onNuevo = (msg) => {
-      if (msg.lote === lote._id) {
-        setMensajes((prev) => [...prev, msg]);
-        setTimeout(() => {
-          scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      }
-    };
+    // 🔹 Unirse inmediatamente si el socket ya está conectado
+    if (socket.connected) joinLote();
 
-    socket.on("historial_mensajes", onHistorial);
-    socket.on("mensaje_lote", onNuevo);
+    // 🔹 Unirse también cuando el socket se reconecta (por ejemplo, después de login)
+    socket.on("connect", joinLote);
+
+    // Escuchar historial de mensajes cuando se une al lote
+    socket.on("historial_mensajes", (historial) => {
+      const formateados = historial.map((m) => ({
+        _id: m._id,
+        usuario: m.emisor,
+        rol: m.rol,
+        contenido: m.texto,
+        imagen: m.imagen,
+        fecha: m.fecha,
+        tipo:
+          m.emisor === user?.nombre || m.emisor === user?.email ? "yo" : "otro",
+      }));
+      setMensajes(formateados);
+    });
+
+    // Escuchar mensajes nuevos en tiempo real
+    socket.on("mensaje_lote", (nuevo) => {
+      if (!nuevo?.lote?._id || nuevo.lote._id !== lote._id) return;
+
+      const mensajeFormateado = {
+        _id: nuevo._id,
+        usuario: nuevo.emisor,
+        rol: nuevo.rol,
+        contenido: nuevo.texto,
+        imagen: nuevo.imagen,
+        fecha: nuevo.fecha,
+        tipo:
+          nuevo.emisor === user?.nombre || nuevo.emisor === user?.email
+            ? "yo"
+            : "otro",
+      };
+
+      setMensajes((prev) => [...prev, mensajeFormateado]);
+    });
 
     return () => {
-      socket.off("historial_mensajes", onHistorial);
-      socket.off("mensaje_lote", onNuevo);
+      socket.off("connect", joinLote);
+      socket.off("historial_mensajes");
+      socket.off("mensaje_lote");
     };
-  }, [lote, socket]);
+  }, [socket, lote?._id, user?.nombre, user?.email]);
 
-  if (!lote)
-    return (
-      <div className="flex-1 flex items-center justify-center text-gray-500 bg-gray-50">
-        Selecciona un lote para comenzar a chatear
-      </div>
-    );
+  // 🔹 Enviar mensaje
+  const handleSend = (texto, imagen) => {
+    if (!socket || (!texto && !imagen)) return;
 
-  // Enviar mensaje
-  const handleEnviar = (texto, imagen) => {
-    if (!texto && !imagen) return;
-
-    socket?.emit("mensaje_lote", {
-  loteId: lote._id,
-  texto,
-  imagen,
-  emisor: {
-    id: user._id,
-    nombre: user.nombre,
-    email: user.email,
-    rol: user.rol,
-  },
-});
-
-    const mensajeOptimista = {
-      lote: lote._id,
-      emisor: user?.nombre || user?.email || "Tú",
+    socket.emit("mensaje_lote", {
+      loteId: lote._id,
       texto,
-      imagen: imagen || null,
-      fecha: new Date(),
-    };
-
-    setMensajes((prev) => [...prev, mensajeOptimista]);
-    setTimeout(() => {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+      imagen,
+    });
   };
 
   return (
-    <section className="flex flex-col h-[calc(100vh-2rem)] bg-white rounded-2xl shadow-md border border-gray-200">
-      {/* Cabecera del chat */}
-      <ChatHeader
-        loteId={lote._id}
-        nombreLote={lote.nombre}
-        onToggleMiembros={() => setMostrarMiembros(!mostrarMiembros)}
-      />
-
-      {/* Cuerpo del chat */}
-      <div className="flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 to-gray-100 p-6 space-y-4 scroll-smooth">
-        {mensajes.map((msg, i) => (
-          <ChatMessage
-            key={i}
-            mensaje={{
-              usuario: msg.emisor === user?.email || msg.emisor === user?.nombre ? "Tú" : msg.emisor,
-              contenido: msg.texto,
-              fecha: msg.fecha,
-              tipo: msg.emisor === user?.email || msg.emisor === user?.nombre ? "yo" : "otro",
-              imagen: msg.imagen || null,
-            }}
-          />
-        ))}
-        {/* Referencia para el scroll automático */}
-        <div ref={scrollRef} />
+    <div className="flex flex-col h-full bg-gray-50">
+      {/* Área de mensajes */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+      >
+        {mensajes.length === 0 ? (
+          <p className="text-center text-gray-400 text-sm mt-6">
+            No hay mensajes todavía
+          </p>
+        ) : (
+          mensajes.map((msg) => (
+            <ChatMessage key={msg._id || Math.random()} mensaje={msg} />
+          ))
+        )}
       </div>
 
-      {/* Caja de texto */}
-      <div className="border-t border-gray-200 bg-white p-3">
-        <ChatInput onSend={handleEnviar} />
-      </div>
-
-      {/* Panel lateral de miembros */}
-      {mostrarMiembros && (
-        <aside className="absolute right-0 top-0 h-full w-64 border-l border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out">
-          <ChatMembers onClose={() => setMostrarMiembros(false)} />
-        </aside>
-      )}
-    </section>
+      {/* Input para escribir */}
+      <ChatInput onSend={handleSend} />
+    </div>
   );
 }
