@@ -1,3 +1,4 @@
+// src/components/messages/ChatMessage.jsx
 import { User } from "lucide-react";
 
 export default function ChatMessage({ mensaje }) {

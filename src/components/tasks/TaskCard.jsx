@@ -84,25 +84,27 @@ export default function TaskCard({ task, onEdit, onDelete, rol }) {
       <td className="px-4 py-3">{task.supervisor?.nombre || "No asignado"}</td>
 
       <td className="px-4 py-3 flex justify-end gap-2">
-        {(rol === "admin" || rol === "supervisor") && (
-          <>
-            <button
-              onClick={() => onEdit && onEdit(task)}
-              className="text-blue-600 hover:text-blue-800"
-              title="Editar tarea"
-            >
-              <FiEdit2 />
-            </button>
-            <button
-              onClick={() => onDelete && onDelete(task._id)}
-              className="text-red-500 hover:text-red-700"
-              title="Eliminar tarea"
-            >
-              <FiTrash2 />
-            </button>
-          </>
-        )}
+       {(rol === "admin" || rol === "supervisor") && (
+  <div className="flex gap-2">
+    <button
+      onClick={() => onEdit && onEdit(task)}
+      className="text-blue-600 hover:text-blue-800"
+      title="Editar tarea"
+    >
+      <FiEdit2 />
+    </button>
 
+    {rol === "admin" && (
+      <button
+        onClick={() => onDelete && onDelete(task._id)}
+        className="text-red-500 hover:text-red-700"
+        title="Eliminar tarea"
+      >
+        <FiTrash2 />
+      </button>
+    )}
+  </div>
+)}
         {(rol === "tecnico" || rol === "admin") && (
           <>
             <button

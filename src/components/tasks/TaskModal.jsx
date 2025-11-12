@@ -33,7 +33,7 @@ export default function TaskModal({ lote, onClose, onTareaCreada }) {
         </button>
 
         <h2 className="text-base font-semibold mb-3 text-gray-800 text-center">
-          Nueva tarea — <span className="text-green-600">{lote.nombre}</span>
+           <span className="text-green-600">{lote.nombre}</span>
         </h2>
 
         <TaskForm

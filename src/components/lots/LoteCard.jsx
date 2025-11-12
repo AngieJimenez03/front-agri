@@ -1,4 +1,5 @@
 // src/components/lots/LoteCard.jsx
+// src/components/lots/LoteCard.jsx
 import React, { useState } from "react";
 import {
   FiMoreVertical,
@@ -14,12 +15,14 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import TaskModal from "../tasks/TaskModal";
+import ChatLote from "../messages/ChatLot"; 
 
 export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [localCount, setLocalCount] = useState(lote.totalTareas || 0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
   const { rol } = useAuth();
   const navigate = useNavigate();
 
@@ -53,9 +56,8 @@ export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
     }
   };
 
-  // 🔥 Redirigir a las tareas del lote
   const handleVerTareas = () => {
-   navigate(`/dashboard/tareas?lote=${lote._id}`);
+    navigate(`/dashboard/tareas?lote=${lote._id}`);
   };
 
   return (
@@ -64,7 +66,9 @@ export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
         {/* HEADER */}
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-base font-semibold text-gray-800">{lote.nombre}</h3>
+            <h3 className="text-base font-semibold text-gray-800">
+              {lote.nombre}
+            </h3>
             <p className="text-sm text-gray-500">{lote.cultivo}</p>
           </div>
 
@@ -82,7 +86,10 @@ export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
             </span>
 
             {(puedeEditar || puedeEliminar || puedeAgregarTarea) && (
-              <button className="p-1 rounded-full hover:bg-gray-100" onClick={toggleMenu}>
+              <button
+                className="p-1 rounded-full hover:bg-gray-100"
+                onClick={toggleMenu}
+              >
                 <FiMoreVertical size={20} />
               </button>
             )}
@@ -130,10 +137,12 @@ export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
         {/* BODY */}
         <div className="mt-3 space-y-1.5 text-sm text-gray-600">
           <p className="flex items-center gap-2">
-            <FiMapPin className="text-gray-400" /> {lote.ubicacion || "Sin ubicación"}
+            <FiMapPin className="text-gray-400" />{" "}
+            {lote.ubicacion || "Sin ubicación"}
           </p>
           <p className="flex items-center gap-2">
-            <FiUser className="text-gray-400" /> {lote.supervisor?.nombre || "No asignado"}
+            <FiUser className="text-gray-400" />{" "}
+            {lote.supervisor?.nombre || "No asignado"}
           </p>
         </div>
 
@@ -150,12 +159,13 @@ export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
               {localCount} Tareas
             </button>
 
+            {/* ✅ BOTÓN DEL CHAT */}
             <button
               className="flex items-center gap-1 text-gray-600 hover:text-green-600 transition"
-              onClick={() => alert("Abrir chat del lote")}
+              onClick={() => setShowChatModal(true)}
             >
               <FiMessageSquare size={15} />
-              <span>5</span>
+              <span></span>
             </button>
           </div>
 
@@ -199,7 +209,8 @@ export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
               ¿Eliminar {lote.nombre}?
             </h2>
             <p className="text-gray-600 mb-5">
-              Esta acción no se puede deshacer. Todos los datos relacionados serán eliminados.
+              Esta acción no se puede deshacer. Todos los datos relacionados
+              serán eliminados.
             </p>
 
             <div className="flex justify-center gap-3">
@@ -215,6 +226,31 @@ export default function LoteCard({ lote, onActualizar, onEditar, onEliminar }) {
               >
                 Eliminar
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*  MODAL CHAT DEL LOTE */}
+      {showChatModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden">
+            {/* Header */}
+            <div className="flex justify-between items-center px-5 py-3 border-b border-gray-200 bg-gray-50">
+              <h2 className="text-lg font-semibold text-gray-800">
+                Chat - {lote.nombre}
+              </h2>
+              <button
+                className="text-gray-400 hover:text-gray-600"
+                onClick={() => setShowChatModal(false)}
+              >
+                <FiX size={22} />
+              </button>
+            </div>
+
+            {/* Chat reutilizado */}
+            <div className="h-[500px]">
+              <ChatLote lote={lote} />
             </div>
           </div>
         </div>

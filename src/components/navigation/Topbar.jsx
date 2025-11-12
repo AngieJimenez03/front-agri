@@ -1,7 +1,8 @@
+// src/components/navigation/Topbar.jsx
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { HiOutlineBellAlert } from "react-icons/hi2";
 import { FaUserCircle } from "react-icons/fa";
+import NotificationDropdown from "../notifications/NotificationDropdown"; // 👈 importa aquí
 import "../../styles/dashboard.css";
 
 export default function Topbar() {
@@ -10,36 +11,14 @@ export default function Topbar() {
   const [titulo, setTitulo] = useState("");
   const [subtitulo, setSubtitulo] = useState("");
 
-  // 📍 Mapa de rutas → títulos y subtítulos
   const mapRutas = {
-    "/dashboard": {
-      titulo: "Panel Principal",
-      subtitulo: "Resumen general de operaciones agrícolas",
-    },
-    "/dashboard/lotes": {
-      titulo: "Gestión de Lotes",
-      subtitulo: "Control y supervisión de los lotes activos",
-    },
-    "/dashboard/tareas": {
-      titulo: "Gestión de Tareas",
-      subtitulo: "Asigna y gestiona tareas del personal técnico",
-    },
-    "/dashboard/usuarios": {
-      titulo: "Gestión de Usuarios",
-      subtitulo: "Administra cuentas y roles del sistema",
-    },
-    "/dashboard/incidencias": {
-      titulo: "Gestión de Incidencias",
-      subtitulo: "Monitoreo y seguimiento de reportes",
-    },
-    "/dashboard/chat": {
-      titulo: "Chat de Lotes",
-      subtitulo: "Comunicación directa con el personal de campo",
-    },
-    "/dashboard/configuracion": {
-      titulo: "Configuración del Sistema",
-      subtitulo: "Ajusta las preferencias del usuario",
-    },
+    "/dashboard": { titulo: "Panel Principal", subtitulo: "Resumen general de operaciones agrícolas" },
+    "/dashboard/lotes": { titulo: "Gestión de Lotes", subtitulo: "Control y supervisión de los lotes activos" },
+    "/dashboard/tareas": { titulo: "Gestión de Tareas", subtitulo: "Asigna y gestiona tareas del personal técnico" },
+    "/dashboard/usuarios": { titulo: "Gestión de Usuarios", subtitulo: "Administra cuentas y roles del sistema" },
+    "/dashboard/incidencias": { titulo: "Gestión de Incidencias", subtitulo: "Monitoreo y seguimiento de reportes" },
+    "/dashboard/chat": { titulo: "Chat de Lotes", subtitulo: "Comunicación directa con el personal de campo" },
+    "/dashboard/configuracion": { titulo: "Configuración del Sistema", subtitulo: "Ajusta las preferencias del usuario" },
   };
 
   useEffect(() => {
@@ -56,9 +35,8 @@ export default function Topbar() {
   return (
     <header
       className="topbar flex justify-between items-center px-6 py-3 shadow-md"
-      style={{ backgroundColor: "#4ade80" }} // 💚 Verde sólido
+      style={{ backgroundColor: "#4ade80" }}
     >
-      {/* 🧭 Título y subtítulo */}
       <div>
         <h1 className="text-lg font-semibold" style={{ color: "#064e3b" }}>
           {titulo}
@@ -68,14 +46,9 @@ export default function Topbar() {
         </p>
       </div>
 
-      {/* 🔔 Notificaciones y perfil */}
       <div className="flex items-center gap-6">
-        <button
-          className="text-white hover:opacity-80 transition"
-          title="Notificaciones"
-        >
-          <HiOutlineBellAlert size={28} />
-        </button>
+      
+        <NotificationDropdown />
 
         <button
           onClick={() => navigate("/dashboard/perfil")}

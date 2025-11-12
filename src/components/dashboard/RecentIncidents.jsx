@@ -13,6 +13,12 @@ function formatearFecha(fechaISO) {
   });
 }
 
+function formatearEstado(estado) {
+  if (!estado) return "Sin estado";
+  const limpio = estado.replace(/_/g, " ").toLowerCase();
+  return limpio.charAt(0).toUpperCase() + limpio.slice(1);
+}
+
 export default function RecentIncidents({ incidencias = [] }) {
   const getBadgeColor = (estado) => {
     switch (estado?.toLowerCase()) {
@@ -20,6 +26,7 @@ export default function RecentIncidents({ incidencias = [] }) {
       case "abierta":
         return "bg-red-100 text-red-700";
       case "en_revision":
+      case "en revision":
       case "en proceso":
         return "bg-yellow-100 text-yellow-700";
       case "resuelta":
@@ -69,12 +76,10 @@ export default function RecentIncidents({ incidencias = [] }) {
                       inc.estado
                     )}`}
                   >
-                    {inc.estado || "Sin estado"}
+                    {formatearEstado(inc.estado)}
                   </span>
                 </td>
-                <td className="py-2">
-                  {inc.responsable || "No asignado"}
-                </td>
+                <td className="py-2">{inc.responsable || "No asignado"}</td>
               </tr>
             ))
           ) : (

@@ -24,20 +24,22 @@ export const SocketProvider = ({ children }) => {
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      console.log(` Socket conectado: ${user.email}`);
+      console.log(`✅ Socket conectado: ${user.email}`);
+
+      // 🔹 Enviamos toda la info necesaria al backend
       newSocket.emit("joinRoom", {
-        rol: user.rol,
         email: user.email,
+        rol: user.rol,
         lotes: user.lotesAsignados || [],
       });
     });
 
     newSocket.on("connect_error", (err) =>
-      console.error(" Error en Socket:", err.message)
+      console.error("❌ Error en Socket:", err.message)
     );
 
     newSocket.on("disconnect", (reason) =>
-      console.warn(" Socket desconectado:", reason)
+      console.warn("⚠️ Socket desconectado:", reason)
     );
 
     return () => newSocket.disconnect();

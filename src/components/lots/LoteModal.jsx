@@ -22,7 +22,7 @@ export default function LoteModal({ lote, onClose, onLoteGuardado }) {
         const data = await getUsersByRole("supervisor");
         setSupervisores(data);
       } catch (error) {
-        console.error("❌ Error al obtener supervisores:", error);
+        console.error(" Error al obtener supervisores:", error);
       }
     };
     cargarSupervisores();
@@ -61,7 +61,7 @@ export default function LoteModal({ lote, onClose, onLoteGuardado }) {
       onLoteGuardado();
       onClose();
     } catch (error) {
-      console.error("❌ Error al guardar lote:", error);
+      console.error(" Error al guardar lote:", error);
       alert("Error al guardar el lote. Revisa los campos.");
     }
   };
