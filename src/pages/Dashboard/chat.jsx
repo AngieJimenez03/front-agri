@@ -1,4 +1,3 @@
-//src/pages/Dashboard/chat.jsx
 // src/pages/Dashboard/chat.jsx
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
@@ -10,13 +9,9 @@ export default function ChatPage() {
   const socket = useSocket();
   const { loteActual, setLoteActual } = useLote();
   const [lotes, setLotes] = useState([]);
-  const [mensajes, setMensajes] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
-
-  // Panel izquierdo redimensionable
   const [panelWidth, setPanelWidth] = useState(280);
   const isResizing = useRef(false);
+  const token = localStorage.getItem("token");
 
   // 🔹 Cargar lotes disponibles
   useEffect(() => {
@@ -32,53 +27,6 @@ export default function ChatPage() {
     };
     fetchLotes();
   }, [token]);
-
-  // 🔹 Cargar historial solo una vez por HTTP al abrir un lote
-  useEffect(() => {
-    if (!loteActual?._id) {
-      setMensajes([]);
-      return;
-    }
-
-    const fetchMensajes = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:5100/api/messages/${loteActual._id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setMensajes(res.data || []);
-      } catch (error) {
-        console.error("Error al obtener mensajes:", error);
-      }
-    };
-
-    fetchMensajes();
-  }, [loteActual, token]);
-
-  // 🔹 Recargar historial al reconectarse el socket
-  useEffect(() => {
-    if (!socket || !loteActual?._id) return;
-
-    const handleReconnect = () => {
-      axios
-        .get(`http://localhost:5100/api/messages/${loteActual._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          setMensajes(res.data || []);
-        })
-        .catch((err) => {
-          console.error("Error al recargar historial:", err);
-        });
-    };
-
-    socket.on("connect", handleReconnect);
-    return () => {
-      socket.off("connect", handleReconnect);
-    };
-  }, [socket, loteActual?._id, token]);
 
   // 🔹 Redimensionamiento panel izquierdo
   const startResizing = () => (isResizing.current = true);
@@ -160,7 +108,7 @@ export default function ChatPage() {
               </div>
 
               <div className="flex-1 overflow-hidden">
-                <ChatLote lote={loteActual} mensajesIniciales={mensajes} />
+                <ChatLote lote={loteActual} />
               </div>
             </>
           ) : (

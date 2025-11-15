@@ -4,6 +4,7 @@ import { registerUser } from "../../services/authService";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import AuthLayout from "../../layouts/AuthLayout";
+import { FaLeaf } from "react-icons/fa";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -45,11 +46,9 @@ export default function Register() {
       <Toaster />
       <div className="bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl p-8 w-full max-w-md transform hover:scale-105 transition duration-500">
         <div className="text-center mb-6">
-          <div className="bg-green-500 inline-block p-4 rounded-full shadow-md mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke="white" className="w-8 h-8">
-              <path d="M12 2.25a9.75 9.75 0 019.75 9.75 9.75 9.75 0 11-9.75-9.75z" />
-            </svg>
-          </div>
+          <div className="inline-block p-4 mb-4 bg-green-100 rounded-full shadow-md">
+  <FaLeaf className="w-8 h-8 text-green-600" />
+</div>
           <h2 className="text-3xl font-bold text-green-700">Crea tu cuenta</h2>
           <p className="text-gray-500 text-sm">Bienvenido a Raízen, un sistema de gestión agrícola</p>
         </div>
