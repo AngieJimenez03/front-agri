@@ -1,18 +1,10 @@
-
 // src/services/incidentsService.js
-import axios from "axios";
-
-// ✅ URL real del backend (ajusta el puerto si es diferente)
-const API = "http://localhost:5100/api/incidents";
+import API from "./api";
 
 // 🔹 Obtener todas las incidencias
 export async function getIncidents() {
-  const token = localStorage.getItem("token");
-
   try {
-    const res = await axios.get(API, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await API.get("/incidents");
 
     return res.data.map((item) => ({
       id: item._id,
@@ -28,27 +20,21 @@ export async function getIncidents() {
   }
 }
 
-// 🔹 Crear una nueva incidencia
+// 🔹 Crear nueva incidencia
 export async function createIncident(data) {
-  const token = localStorage.getItem("token");
-
   try {
-    const res = await axios.post(API, data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await API.post("/incidents", data);
     return res.data;
   } catch (error) {
     console.error("Error al crear incidencia:", error.response?.data || error);
     throw error;
   }
 }
+
 // 🔹 Actualizar incidencia
 export async function updateIncident(id, data) {
-  const token = localStorage.getItem("token");
   try {
-    const res = await axios.put(`${API}/${id}`, data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await API.put(`/incidents/${id}`, data);
     return res.data.incidencia;
   } catch (error) {
     console.error("Error al actualizar incidencia:", error);
@@ -58,11 +44,8 @@ export async function updateIncident(id, data) {
 
 // 🔹 Eliminar incidencia
 export async function deleteIncident(id) {
-  const token = localStorage.getItem("token");
   try {
-    await axios.delete(`${API}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    await API.delete(`/incidents/${id}`);
   } catch (error) {
     console.error("Error al eliminar incidencia:", error);
     throw error;
